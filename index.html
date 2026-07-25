@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Marcos Paulo Macedo | Automation Engineer & RPA Database Architect</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts & FontAwesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Three.js for 3D Earth Animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            brand: {
+              bg: '#0f1115',        /* Dark charcoal gray background */
+              card: '#16181d',      /* Dark slate gray card */
+              cardHover: '#20232b', /* Hover state gray */
+              accent: '#ef4444',    /* Tech Crimson Red */
+              red: '#ef4444',
+              redHover: '#dc2626',
+              emerald: '#10b981',  /* Emerald Green */
+              emeraldHover: '#059669',
+              border: '#272a34',    /* Slate gray border */
+              darkBorder: '#1c1e24',
+              text: '#f4f4f5',      /* Pure soft white */
+              muted: '#9ca3af'     /* Medium gray text */
+            }
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'spin-slow': 'spin 20s linear infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom CSS animations and smooth effects */
+    .glass-card {
+      background: rgba(22, 24, 29, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(45, 49, 61, 0.7);
+    }
+    
+    .glass-card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 12px 30px -10px rgba(239, 68, 68, 0.15);
+    }
+
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+    }
+    
+    .reveal-on-scroll.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Glow overlays */
+    .glow-red {
+      box-shadow: 0 0 50px -10px rgba(239, 68, 68, 0.2);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.2);
+    }
+    
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f1115;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #272a34;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #ef4444;
+    }
+  </style>
+</head>
+<body class="bg-brand-bg text-brand-text font-sans antialiased overflow-x-hidden selection:bg-brand-red selection:text-white">
+
+  <!-- Fixed Header Navigation -->
+  <header class="fixed top-0 w-full bg-brand-bg/90 backdrop-blur-xl z-50 border-b border-zinc-800/80 transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+      <a href="#hero" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-red-600 to-zinc-900 border border-zinc-700 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-red-900/30 group-hover:scale-105 transition">
+          M
+        </div>
+        <div class="flex flex-col">
+          <span class="text-lg font-bold tracking-tight text-white leading-tight">Marcos Paulo</span>
+          <span class="text-xs font-mono text-emerald-400">Automation Engineer</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-brand-muted">
+        <a href="#about" class="hover:text-white transition-colors">About</a>
+        <a href="#metrics" class="hover:text-emerald-400 transition-colors">Impact</a>
+        <a href="#research" class="hover:text-red-400 transition-colors">Research</a>
+        <a href="#architecture" class="hover:text-white transition-colors">Architecture</a>
+        <a href="#experience" class="hover:text-white transition-colors">Experience</a>
+        <a href="#calculator" class="hover:text-emerald-400 transition-colors">ROI Calculator</a>
+      </nav>
+
+      <div class="flex items-center gap-4">
+        <a href="mailto:marcos.macedo@example.com" class="hidden sm:inline-flex bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition shadow-lg shadow-red-950/40 items-center gap-2 hover:scale-[1.02]">
+          <i class="fa-solid fa-paper-plane"></i> Get in Touch
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section with 3D Animated Planet Earth Background -->
+  <section id="hero" class="relative min-h-screen pt-28 pb-20 px-6 flex items-center justify-center overflow-hidden border-b border-zinc-800">
+    
+    <!-- 3D Earth WebGL Canvas Container -->
+    <div class="absolute inset-0 z-0 opacity-70 pointer-events-none">
+      <div id="earth-canvas-container" class="w-full h-full"></div>
+      <!-- Gradient overlays for smooth readability -->
+      <div class="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/70 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-r from-brand-bg via-transparent to-brand-bg"></div>
+    </div>
+
+    <!-- Hero Content Container -->
+    <div class="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
+      
+      <!-- Status Badge -->
+      <div class="inline-flex items-center gap-2.5 bg-zinc-900/90 border border-zinc-700/80 px-4 py-2 rounded-full mb-8 backdrop-blur-md shadow-xl animate-float">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+        </span>
+        <span class="text-xs text-zinc-300 font-mono tracking-wide">Ready for Enterprise & Global Projects</span>
+      </div>
+
+      <!-- Main Boxed Content -->
+      <div class="glass-card rounded-3xl p-8 sm:p-12 md:p-14 border border-zinc-700/80 shadow-2xl glow-red max-w-4xl w-full text-center relative overflow-hidden group">
+        
+        <!-- Subtle Glow Accent inside Hero Box -->
+        <div class="absolute -top-24 -left-24 w-60 h-60 bg-red-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+          Intelligent Automation Engineer <br class="hidden sm:inline">
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-200 to-red-500">& RPA Database Architect</span>
+        </h1>
+        
+        <p class="text-base sm:text-lg md:text-xl text-zinc-400 max-w-3xl mx-auto leading-relaxed font-normal mb-8">
+          Specialized in scaling enterprise automation, integrating custom Computer Vision/OCR pipelines, and engineering high-availability PostgreSQL governance for RPA fleets.
+        </p>
+
+        <!-- CTA Action Buttons -->
+        <div class="flex flex-wrap justify-center gap-4 items-center">
+          <a href="#architecture" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold px-7 py-3.5 rounded-xl transition shadow-lg shadow-red-950/50 flex items-center gap-2 hover:scale-105 text-sm sm:text-base border border-red-500/30">
+            <i class="fa-solid fa-diagram-project"></i> Explore Architectures
+          </a>
+          <a href="https://github.com/Marcos-Paulo-Macedo" target="_blank" rel="noopener noreferrer" class="bg-zinc-900/90 hover:bg-zinc-800 text-white font-semibold px-6 py-3.5 rounded-xl border border-zinc-700 transition flex items-center gap-2 text-sm sm:text-base hover:scale-105">
+            <i class="fa-brands fa-github text-lg"></i> GitHub Profile
+          </a>
+          <a href="https://www.linkedin.com/in/marcos-macedo-5005901b9" target="_blank" rel="noopener noreferrer" class="bg-zinc-900/90 hover:bg-zinc-800 text-white font-semibold px-6 py-3.5 rounded-xl border border-zinc-700 transition flex items-center gap-2 text-sm sm:text-base hover:scale-105">
+            <i class="fa-brands fa-linkedin text-lg text-emerald-400"></i> LinkedIn
+          </a>
+        </div>
+      </div>
+
+      <!-- Tech Stack Badges -->
+      <div class="mt-12 flex flex-col items-center">
+        <p class="text-xs font-mono text-zinc-400 uppercase tracking-widest mb-4">Core Technology Stack</p>
+        <div class="flex flex-wrap justify-center gap-2.5 max-w-2xl">
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-red-500/50 transition">Python</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-emerald-500/50 transition">UiPath</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-red-500/50 transition">PostgreSQL</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-emerald-500/50 transition">YOLO / Computer Vision</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-red-500/50 transition">Selenium & Playwright</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-emerald-500/50 transition">Kotlin</span>
+          <span class="px-3.5 py-1.5 bg-zinc-900/90 border border-zinc-800 rounded-lg text-xs text-zinc-300 font-mono hover:border-red-500/50 transition">Docker & CI/CD</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Impact Metrics Section -->
+  <section id="metrics" class="py-20 bg-zinc-950/80 border-b border-zinc-800/80 relative">
+    <div class="max-w-7xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-14 reveal-on-scroll">
+        <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">Proven Track Record</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Quantitative Business Impact</h2>
+        <p class="text-zinc-400 mt-3 text-sm sm:text-base">Measurable efficiency gains delivered across financial institutions, supply chains, and enterprise operations.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Metric 1 -->
+        <div class="glass-card glass-card-hover p-8 rounded-2xl relative overflow-hidden group reveal-on-scroll border border-zinc-800">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">+120% YoY</span>
+          </div>
+          <div class="text-4xl font-extrabold text-white tracking-tight mb-2 flex items-baseline gap-1">
+            <span class="counter" data-target="2000">2,000</span><span class="text-emerald-400">+</span>
+          </div>
+          <div class="text-sm font-semibold text-zinc-200 mb-2">Operational Hours Saved / Month</div>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Eliminated manual data entry bottlenecks in financial reconciliation, document processing, and ERP synchronization.
+          </p>
+        </div>
+
+        <!-- Metric 2 -->
+        <div class="glass-card glass-card-hover p-8 rounded-2xl relative overflow-hidden group reveal-on-scroll border border-zinc-800">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-xl">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <span class="text-xs font-mono text-red-400 bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">99.9% Uptime</span>
+          </div>
+          <div class="text-4xl font-extrabold text-white tracking-tight mb-2 flex items-baseline gap-1">
+            <span class="counter" data-target="25">25</span><span class="text-red-500">+</span>
+          </div>
+          <div class="text-sm font-semibold text-zinc-200 mb-2">Production Bots Executing</div>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            High-reliability attended and unattended UiPath & Python bots orchestrated via centralized PostgreSQL telemetry.
+          </p>
+        </div>
+
+        <!-- Metric 3 -->
+        <div class="glass-card glass-card-hover p-8 rounded-2xl relative overflow-hidden group reveal-on-scroll border border-zinc-800">
+          <div class="flex items-center justify-between mb-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+            <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">Zero-Trust OCR</span>
+          </div>
+          <div class="text-4xl font-extrabold text-white tracking-tight mb-2 flex items-baseline gap-1">
+            <span class="counter" data-target="99">99.6</span><span class="text-emerald-400">%</span>
+          </div>
+          <div class="text-sm font-semibold text-zinc-200 mb-2">OCR Document Extraction Accuracy</div>
+          <p class="text-xs text-zinc-400 leading-relaxed">
+            Achieved with Project Proteo computer vision model for heterogeneous Brazilian ID cards and driving licenses.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Scientific Research Section -->
+  <section id="research" class="py-24 max-w-7xl mx-auto px-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 reveal-on-scroll">
+      <div>
+        <span class="text-red-500 font-mono text-xs font-semibold uppercase tracking-widest">Applied Artificial Intelligence</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Scientific Research & Papers</h2>
+      </div>
+      <p class="text-zinc-400 text-sm max-w-md mt-4 md:mt-0">Bridging academic research with enterprise-grade computer vision and automated document intelligence.</p>
+    </div>
+
+    <!-- Featured Research Paper Container -->
+    <div class="glass-card rounded-3xl border border-zinc-800 p-8 sm:p-10 relative overflow-hidden reveal-on-scroll">
+      <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <div class="lg:col-span-8 space-y-5">
+          <div class="flex flex-wrap gap-2.5 items-center">
+            <span class="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg text-xs font-mono font-medium">
+              <i class="fa-solid fa-graduation-cap"></i> Research & Computer Vision
+            </span>
+            <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-mono font-medium">
+              Deployed in Production
+            </span>
+          </div>
+
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-white leading-snug">
+            Project Proteo: Computer Vision & Custom OCR Engine for Heterogeneous Document Parsing
+          </h3>
+
+          <p class="text-zinc-400 text-sm sm:text-base leading-relaxed">
+            An end-to-end framework engineered to extract, normalize, and validate structured data from Brazilian identification documents (RG and CNH). Implements custom image preprocessing (perspective correction, adaptive thresholding, lighting normalization) combined with EfficientNetB0 classification, EasyOCR, and Modulo 11 check-digit verification to parse low-quality scans reliably.
+          </p>
+
+          <!-- Key Highlights -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div class="flex items-center gap-3 text-xs text-zinc-300 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+              <i class="fa-solid fa-check text-emerald-400 text-sm"></i> Adaptive rotation & glare elimination
+            </div>
+            <div class="flex items-center gap-3 text-xs text-zinc-300 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
+              <i class="fa-solid fa-check text-emerald-400 text-sm"></i> Sub-second OCR & Modulo 11 validation
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-2">
+            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded-md text-xs font-mono border border-zinc-700">EfficientNetB0</span>
+            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded-md text-xs font-mono border border-zinc-700">TensorFlow</span>
+            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded-md text-xs font-mono border border-zinc-700">EasyOCR</span>
+            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded-md text-xs font-mono border border-zinc-700">OpenCV</span>
+            <span class="px-3 py-1 bg-zinc-800 text-zinc-300 rounded-md text-xs font-mono border border-zinc-700">FastAPI</span>
+          </div>
+        </div>
+
+        <!-- Action Callout Box -->
+        <div class="lg:col-span-4 bg-zinc-900/90 rounded-2xl p-6 border border-zinc-800 flex flex-col justify-between h-full space-y-6">
+          <div>
+            <div class="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-2">Benchmark Performance</div>
+            <div class="text-3xl font-bold text-white mb-1">99.6% Precision</div>
+            <p class="text-xs text-zinc-400">Tested against 10,000+ real-world document variations in banking onboarding routines.</p>
+          </div>
+
+          <div class="space-y-3">
+            <a href="https://github.com/Marcos-Paulo-Macedo/proteo-document-classifier/blob/main/paper.pdf" target="_blank" rel="noopener noreferrer" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-4 rounded-xl transition text-center text-sm flex items-center justify-center gap-2 shadow-lg shadow-red-950/40">
+              <i class="fa-regular fa-file-pdf"></i> Read Full Paper (PDF)
+            </a>
+            <a href="https://github.com/Marcos-Paulo-Macedo/proteo-document-classifier" target="_blank" rel="noopener noreferrer" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-medium py-3 px-4 rounded-xl border border-zinc-700 transition text-center text-sm flex items-center justify-center gap-2">
+              <i class="fa-brands fa-github"></i> View GitHub Repository
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture & System Solutions -->
+  <section id="architecture" class="py-24 bg-zinc-950/80 border-t border-zinc-800">
+    <div class="max-w-7xl mx-auto px-6">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16 reveal-on-scroll">
+        <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">System Engineering</span>
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Architecture & Infrastructure</h2>
+        <p class="text-zinc-400 mt-3 text-sm sm:text-base">Designed for zero data loss, fault tolerance, and automated governance across complex environments.</p>
+      </div>
+
+      <!-- Architecture Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+        
+        <!-- Architecture 1 -->
+        <div class="glass-card glass-card-hover p-8 rounded-2xl flex flex-col justify-between border border-zinc-800 reveal-on-scroll">
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <div class="w-12 h-12 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 text-2xl">
+                <i class="fa-solid fa-database"></i>
+              </div>
+              <span class="text-xs font-mono text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">Governance Model</span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-3">PostgreSQL Telemetry & Governance Model for RPA Fleets</h3>
+            
+            <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+              A centralized relational model designed to replace fragmented logs with transactional telemetry. Stores bot heartbeats, execution status, payload queues, and exception stack traces in real time.
+            </p>
+
+            <!-- Mini Visual Flow Diagram -->
+            <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 mb-6 space-y-2">
+              <div class="flex items-center justify-between text-red-400">
+                <span>[RPA Robots]</span>
+                <i class="fa-solid fa-arrow-right text-zinc-600"></i>
+                <span>[JSON Payload]</span>
+                <i class="fa-solid fa-arrow-right text-zinc-600"></i>
+                <span>[PostgreSQL]</span>
+              </div>
+              <div class="text-[11px] text-zinc-500 pt-1 border-t border-zinc-800 flex justify-between">
+                <span>Centralized Audit Logs</span>
+                <span class="text-emerald-400">Real-time Grafana Alerts</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+            <div class="flex gap-2">
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">PostgreSQL</span>
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">Python</span>
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">Grafana</span>
+            </div>
+            <a href="https://github.com/Marcos-Paulo-Macedo/enterprise-rpa-postgresql-governance" target="_blank" rel="noopener noreferrer" class="text-red-400 hover:text-red-300 text-xs font-semibold flex items-center gap-1 group">
+              Details <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Architecture 2 -->
+        <div class="glass-card glass-card-hover p-8 rounded-2xl flex flex-col justify-between border border-zinc-800 reveal-on-scroll">
+          <div>
+            <div class="flex justify-between items-center mb-6">
+              <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-2xl">
+                <i class="fa-solid fa-network-wired"></i>
+              </div>
+              <span class="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">High Throughput</span>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-3">Multi-Threaded Web Extraction Pipeline</h3>
+            
+            <p class="text-zinc-400 text-sm leading-relaxed mb-6">
+              Resilient web-scraping architecture engineered with Python, Selenium, and Playwright. Built with automatic proxy rotation, anti-bot detection bypass, and concurrent worker pools.
+            </p>
+
+            <!-- Mini Visual Flow Diagram -->
+            <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 mb-6 space-y-2">
+              <div class="flex items-center justify-between text-emerald-400">
+                <span>[Concurrent Workers]</span>
+                <i class="fa-solid fa-arrow-right text-zinc-600"></i>
+                <span>[Anti-Bot Bypass]</span>
+                <i class="fa-solid fa-arrow-right text-zinc-600"></i>
+                <span>[Data Pipeline]</span>
+              </div>
+              <div class="text-[11px] text-zinc-500 pt-1 border-t border-zinc-800 flex justify-between">
+                <span>Rate Limiting & Proxy Rotation</span>
+                <span class="text-emerald-400">10k+ pages/hr</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between pt-4 border-t border-zinc-800">
+            <div class="flex gap-2">
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">Python</span>
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">Selenium</span>
+              <span class="px-2.5 py-1 bg-zinc-800 text-zinc-300 rounded text-xs font-mono border border-zinc-700">Playwright</span>
+            </div>
+            <a href="https://github.com/Marcos-Paulo-Macedo/enterprise-rpa-postgresql-governance" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 text-xs font-semibold flex items-center gap-1 group">
+              Details <i class="fa-solid fa-chevron-right text-[10px] group-hover:translate-x-1 transition"></i>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience & Career Journey -->
+  <section id="experience" class="py-24 max-w-7xl mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16 reveal-on-scroll">
+      <span class="text-red-500 font-mono text-xs font-semibold uppercase tracking-widest">Professional Trajectory</span>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Work Experience & Leadership</h2>
+      <p class="text-zinc-400 mt-3 text-sm sm:text-base">Track record of continuous optimization in market-leading organizations.</p>
+    </div>
+
+    <!-- Timeline Wrapper -->
+    <div class="relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:-ml-px before:w-0.5 before:bg-zinc-800 max-w-5xl mx-auto space-y-12">
+      
+      <!-- Experience 1: Cresol -->
+      <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group reveal-on-scroll">
+        <div class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-red-500 bg-zinc-950 text-red-500 text-sm font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 shadow-lg shadow-red-950/50">
+          <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] glass-card p-8 rounded-2xl border border-zinc-800">
+          <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+            <h3 class="font-bold text-white text-xl">Process Analyst & RPA Specialist</h3>
+            <span class="text-xs font-mono text-red-400 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/20">2025 - Present</span>
+          </div>
+          <div class="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
+            <span class="text-emerald-400">Cresol</span> • Financial Credit Cooperative
+          </div>
+          <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+            Leading end-to-end automation architecture for credit processing and operational workflows. Engineered custom database monitoring models to reduce exception resolution times across unattended RPA instances.
+          </p>
+          <ul class="text-xs text-zinc-300 space-y-2 list-disc list-inside">
+            <li>Mapped and automated 15+ credit analysis procedures.</li>
+            <li>Engineered telemetry layer in PostgreSQL for real-time bot tracking.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Experience 2: Ambev -->
+      <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group reveal-on-scroll">
+        <div class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-zinc-700 bg-zinc-950 text-zinc-400 text-sm font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+          <i class="fa-solid fa-building"></i>
+        </div>
+        <div class="w-[calc(100%-3rem)] md:w-[calc(50%-2.5rem)] glass-card p-8 rounded-2xl border border-zinc-800">
+          <div class="flex flex-wrap justify-between items-center mb-2 gap-2">
+            <h3 class="font-bold text-white text-xl">Automation & Operations Analyst</h3>
+            <span class="text-xs font-mono text-zinc-400 bg-zinc-800 px-3 py-1 rounded-full">Previous Role</span>
+          </div>
+          <div class="text-sm font-semibold text-zinc-300 mb-4 flex items-center gap-2">
+            <span class="text-red-400">Ambev</span> • Global FMCG Leader
+          </div>
+          <p class="text-zinc-400 text-sm leading-relaxed mb-4">
+            Optimized logistics pipelines and operational reporting routines through Python scripts and SQL queries.
+          </p>
+          
+          <blockquote class="bg-zinc-900/90 p-4 rounded-xl border-l-2 border-emerald-500 text-xs italic text-zinc-300 leading-relaxed">
+            "Recognized for proactive problem solving, operational discipline, and technical agility in transforming manual tasks into structured automated pipelines."
+          </blockquote>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Interactive ROI Calculator Widget -->
+  <section id="calculator" class="py-24 bg-zinc-950/80 border-t border-zinc-800">
+    <div class="max-w-5xl mx-auto px-6">
+      
+      <div class="glass-card rounded-3xl p-8 sm:p-12 border border-zinc-800 reveal-on-scroll">
+        <div class="text-center max-w-xl mx-auto mb-10">
+          <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">Interactive Calculator</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">Estimate Your Automation ROI</h2>
+          <p class="text-zinc-400 text-xs sm:text-sm mt-2">Calculate how much operational time and budget intelligent RPA can save for your team.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          
+          <!-- Controls -->
+          <div class="space-y-6">
+            <div>
+              <div class="flex justify-between text-xs font-semibold text-zinc-300 mb-2">
+                <span>Repetitive Processes:</span>
+                <span id="process-count" class="text-red-400 font-mono font-bold text-sm">5 Processes</span>
+              </div>
+              <input type="range" id="input-processes" min="1" max="20" value="5" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold text-zinc-300 mb-2">
+                <span>Hours spent per process / month:</span>
+                <span id="hours-count" class="text-emerald-400 font-mono font-bold text-sm">80 Hours</span>
+              </div>
+              <input type="range" id="input-hours" min="10" max="300" value="80" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold text-zinc-300 mb-2">
+                <span>Avg. Hourly Operational Cost ($):</span>
+                <span id="cost-count" class="text-red-400 font-mono font-bold text-sm">$25 / hr</span>
+              </div>
+              <input type="range" id="input-cost" min="10" max="100" value="25" class="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500">
+            </div>
+          </div>
+
+          <!-- Result Card -->
+          <div class="bg-zinc-900/90 rounded-2xl p-6 border border-zinc-800 text-center space-y-4">
+            <div class="text-xs font-mono text-zinc-400 uppercase">Projected Annual Savings</div>
+            <div id="output-savings" class="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-red-400">
+              $108,000
+            </div>
+            <div class="text-xs text-zinc-300 font-mono">
+              <span id="output-hours" class="text-emerald-400 font-bold">4,320</span> Hours freed per year
+            </div>
+            <p class="text-[11px] text-zinc-500 leading-relaxed pt-2 border-t border-zinc-800">
+              Based on standard 90% error reduction and direct automation execution metrics.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Education & Degrees -->
+  <section class="py-20 border-t border-zinc-800">
+    <div class="max-w-7xl mx-auto px-6">
+      <h2 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+        <i class="fa-solid fa-graduation-cap text-red-500"></i> Academic Degrees
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="glass-card p-6 rounded-2xl border border-zinc-800">
+          <div class="text-xs font-mono text-emerald-400 mb-1">Higher Education</div>
+          <h3 class="text-lg font-bold text-white">Systems Analysis and Development</h3>
+          <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Focus on software architecture, relational database optimization, algorithms, and object-oriented paradigms.</p>
+        </div>
+
+        <div class="glass-card p-6 rounded-2xl border border-zinc-800">
+          <div class="text-xs font-mono text-red-400 mb-1">Engineering Degree</div>
+          <h3 class="text-lg font-bold text-white">Chemical Engineering</h3>
+          <p class="text-xs text-zinc-400 mt-2 leading-relaxed">Focus on mathematical modeling, system control, process optimization, and operational efficiency.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section -->
+  <footer class="py-12 border-t border-zinc-800 text-zinc-400 text-sm bg-zinc-950">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white font-extrabold text-sm border border-red-500/30">
+          M
+        </div>
+        <span class="text-xs text-zinc-400">© Marcos Paulo Macedo. Hosted on GitHub Pages.</span>
+      </div>
+
+      <div class="flex space-x-6 text-zinc-400">
+        <a href="https://github.com/Marcos-Paulo-Macedo" target="_blank" rel="noopener noreferrer" class="hover:text-white transition"><i class="fa-brands fa-github text-xl"></i></a>
+        <a href="https://www.linkedin.com/in/marcos-macedo-5005901b9" target="_blank" rel="noopener noreferrer" class="hover:text-emerald-400 transition"><i class="fa-brands fa-linkedin text-xl"></i></a>
+        <a href="mailto:marcos.macedo@example.com" class="hover:text-red-400 transition"><i class="fa-solid fa-envelope text-xl"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Three.js 3D Animated Rotating Earth Globe Script -->
+  <script>
+    function init3DEarth() {
+      const container = document.getElementById('earth-canvas-container');
+      if (!container) return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+      camera.position.z = 2.8;
+
+      const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      container.appendChild(renderer.domElement);
+
+      // Create Dot Sphere representation of Planet Earth (White/Light gray dots)
+      const geometry = new THREE.SphereGeometry(1, 48, 48);
+      
+      const material = new THREE.PointsMaterial({
+        color: 0xe2e8f0,
+        size: 0.014,
+        transparent: true,
+        opacity: 0.85
+      });
+
+      const earthPoints = new THREE.Points(geometry, material);
+      scene.add(earthPoints);
+
+      // Add atmospheric glow sphere (Sleek Dark Red atmospheric wireframe ring)
+      const atmosphereGeo = new THREE.SphereGeometry(1.05, 32, 32);
+      const atmosphereMat = new THREE.MeshBasicMaterial({
+        color: 0xef4444,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.12
+      });
+      const atmosphere = new THREE.Mesh(atmosphereGeo, atmosphereMat);
+      scene.add(atmosphere);
+
+      // Ambient Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+      scene.add(ambientLight);
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        earthPoints.rotation.y += 0.0018;
+        earthPoints.rotation.x += 0.0003;
+        atmosphere.rotation.y += 0.0018;
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // Handle Resize
+      window.addEventListener('resize', () => {
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+      });
+    }
+
+    // Initialize 3D Earth after DOM loads
+    document.addEventListener('DOMContentLoaded', init3DEarth);
+  </script>
+
+  <!-- Interactive ROI Calculator & Reveal Script -->
+  <script>
+    // Reveal on scroll observer
+    const observerOptions = { threshold: 0.15 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+
+    // Interactive ROI Calculator Logic
+    const pInput = document.getElementById('input-processes');
+    const hInput = document.getElementById('input-hours');
+    const cInput = document.getElementById('input-cost');
+
+    function calculateROI() {
+      const processes = parseInt(pInput.value);
+      const hours = parseInt(hInput.value);
+      const cost = parseInt(cInput.value);
+
+      document.getElementById('process-count').innerText = `${processes} Processes`;
+      document.getElementById('hours-count').innerText = `${hours} Hours`;
+      document.getElementById('cost-count').innerText = `$${cost} / hr`;
+
+      const totalHoursSavedYearly = Math.round(processes * hours * 12 * 0.9);
+      const totalDollarSaved = totalHoursSavedYearly * cost;
+
+      document.getElementById('output-hours').innerText = totalHoursSavedYearly.toLocaleString();
+      document.getElementById('output-savings').innerText = `$${totalDollarSaved.toLocaleString()}`;
+    }
+
+    if (pInput && hInput && cInput) {
+      [pInput, hInput, cInput].forEach(inp => inp.addEventListener('input', calculateROI));
+      calculateROI();
+    }
+  </script>
+
+</body>
+</html>
