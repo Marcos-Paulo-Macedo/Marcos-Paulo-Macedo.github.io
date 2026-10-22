@@ -34,12 +34,12 @@
               accent: '#ef4444',    /* Tech Crimson Red */
               red: '#ef4444',
               redHover: '#dc2626',
-              emerald: '#10b981',  /* Emerald Green */
+              emerald: '#10b981',   /* Emerald Green */
               emeraldHover: '#059669',
               border: '#272a34',    /* Slate gray border */
               darkBorder: '#1c1e24',
               text: '#f4f4f5',      /* Pure soft white */
-              muted: '#9ca3af'     /* Medium gray text */
+              muted: '#9ca3af'      /* Medium gray text */
             }
           },
           animation: {
@@ -59,7 +59,6 @@
   </script>
 
   <style>
-    /* Custom CSS animations and smooth effects */
     .glass-card {
       background: rgba(22, 24, 29, 0.85);
       backdrop-filter: blur(12px);
@@ -86,7 +85,6 @@
       transform: translateY(0);
     }
 
-    /* Glow overlays */
     .glow-red {
       box-shadow: 0 0 50px -10px rgba(239, 68, 68, 0.2);
     }
@@ -94,7 +92,6 @@
       box-shadow: 0 0 50px -10px rgba(16, 185, 129, 0.2);
     }
     
-    /* Scrollbar Styling */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -133,6 +130,10 @@
         <a href="#architecture" class="hover:text-white transition-colors">Architecture</a>
         <a href="#experience" class="hover:text-white transition-colors">Experience</a>
         <a href="#calculator" class="hover:text-emerald-400 transition-colors">ROI Calculator</a>
+        <!-- Link de Navegação para o RPA Challenger -->
+        <a href="rpa_challenger.html" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-mono font-semibold flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-gamepad text-xs"></i> RPA Challenger
+        </a>
       </nav>
 
       <div class="flex items-center gap-4">
@@ -149,7 +150,6 @@
     <!-- 3D Earth WebGL Canvas Container -->
     <div class="absolute inset-0 z-0 opacity-70 pointer-events-none">
       <div id="earth-canvas-container" class="w-full h-full"></div>
-      <!-- Gradient overlays for smooth readability -->
       <div class="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/70 to-transparent"></div>
       <div class="absolute inset-0 bg-gradient-to-r from-brand-bg via-transparent to-brand-bg"></div>
     </div>
@@ -169,7 +169,6 @@
       <!-- Main Boxed Content -->
       <div class="glass-card rounded-3xl p-8 sm:p-12 md:p-14 border border-zinc-700/80 shadow-2xl glow-red max-w-4xl w-full text-center relative overflow-hidden group">
         
-        <!-- Subtle Glow Accent inside Hero Box -->
         <div class="absolute -top-24 -left-24 w-60 h-60 bg-red-600/15 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-emerald-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -184,6 +183,11 @@
 
         <!-- CTA Action Buttons -->
         <div class="flex flex-wrap justify-center gap-4 items-center">
+          <!-- Botão que abre o rpa_challenger.html -->
+          <a href="rpa_challenger.html" target="_blank" rel="noopener noreferrer" class="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-bold px-7 py-3.5 rounded-xl transition shadow-lg shadow-emerald-950/50 flex items-center gap-2 hover:scale-105 text-sm sm:text-base border border-emerald-400/40">
+            <i class="fa-solid fa-gamepad text-lg"></i> Abrir RPA Challenger
+          </a>
+
           <a href="#architecture" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-bold px-7 py-3.5 rounded-xl transition shadow-lg shadow-red-950/50 flex items-center gap-2 hover:scale-105 text-sm sm:text-base border border-red-500/30">
             <i class="fa-solid fa-diagram-project"></i> Explore Architectures
           </a>
@@ -216,7 +220,6 @@
   <!-- Impact Metrics Section -->
   <section id="metrics" class="py-20 bg-zinc-950/80 border-b border-zinc-800/80 relative">
     <div class="max-w-7xl mx-auto px-6">
-      
       <div class="text-center max-w-2xl mx-auto mb-14 reveal-on-scroll">
         <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">Proven Track Record</span>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Quantitative Business Impact</h2>
@@ -224,7 +227,6 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        
         <!-- Metric 1 -->
         <div class="glass-card glass-card-hover p-8 rounded-2xl relative overflow-hidden group reveal-on-scroll border border-zinc-800">
           <div class="flex items-center justify-between mb-4">
@@ -275,7 +277,6 @@
             Achieved with custom computer vision models for heterogeneous Brazilian ID cards and driving licenses.
           </p>
         </div>
-
       </div>
     </div>
   </section>
@@ -296,7 +297,6 @@
         <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
           <div class="lg:col-span-8 space-y-5">
             <div class="flex flex-wrap gap-2.5 items-center">
               <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-mono font-medium">
@@ -337,7 +337,6 @@
               </a>
             </div>
           </div>
-
         </div>
       </div>
 
@@ -346,7 +345,6 @@
         <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-          
           <div class="lg:col-span-8 space-y-5">
             <div class="flex flex-wrap gap-2.5 items-center">
               <span class="px-3 py-1 bg-red-500/10 text-red-400 border border-red-500/30 rounded-lg text-xs font-mono font-medium">
@@ -365,7 +363,6 @@
               An end-to-end framework engineered to extract, normalize, and validate structured data from Brazilian identification documents (RG and CNH) while maintaining strict LGPD compliance. Implements custom image preprocessing (perspective correction, adaptive thresholding, lighting normalization) combined with EfficientNetB0 classification, EasyOCR, and Modulo 11 check-digit verification.
             </p>
 
-            <!-- Key Highlights -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
               <div class="flex items-center gap-3 text-xs text-zinc-300 bg-zinc-900/80 p-3 rounded-xl border border-zinc-800">
                 <i class="fa-solid fa-check text-emerald-400 text-sm"></i> Adaptive rotation & glare elimination
@@ -398,7 +395,6 @@
               </a>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -407,7 +403,6 @@
   <!-- Architecture & System Solutions -->
   <section id="architecture" class="py-24 bg-zinc-950/80 border-t border-zinc-800">
     <div class="max-w-7xl mx-auto px-6">
-      
       <div class="text-center max-w-2xl mx-auto mb-16 reveal-on-scroll">
         <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">System Engineering</span>
         <h2 class="text-3xl sm:text-4xl font-extrabold text-white mt-2">Architecture & Infrastructure</h2>
@@ -416,7 +411,6 @@
 
       <!-- Architecture Cards Grid -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-        
         <!-- Architecture 1 -->
         <div class="glass-card glass-card-hover p-8 rounded-2xl flex flex-col justify-between border border-zinc-800 reveal-on-scroll">
           <div>
@@ -433,7 +427,6 @@
               A centralized relational model designed to replace fragmented logs with transactional telemetry. Stores bot heartbeats, execution status, payload queues, and exception stack traces in real time.
             </p>
 
-            <!-- Mini Visual Flow Diagram -->
             <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 mb-6 space-y-2">
               <div class="flex items-center justify-between text-red-400">
                 <span>[RPA Robots]</span>
@@ -477,7 +470,6 @@
               Resilient web-scraping architecture engineered with Python, Selenium, and Playwright. Built with automatic proxy rotation, anti-bot detection bypass, and concurrent worker pools.
             </p>
 
-            <!-- Mini Visual Flow Diagram -->
             <div class="bg-zinc-900/90 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 mb-6 space-y-2">
               <div class="flex items-center justify-between text-emerald-400">
                 <span>[Concurrent Workers]</span>
@@ -504,7 +496,6 @@
             </a>
           </div>
         </div>
-
       </div>
     </div>
   </section>
@@ -517,9 +508,7 @@
       <p class="text-zinc-400 mt-3 text-sm sm:text-base">Track record of continuous optimization in market-leading organizations.</p>
     </div>
 
-    <!-- Timeline Wrapper -->
     <div class="relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:-ml-px before:w-0.5 before:bg-zinc-800 max-w-5xl mx-auto space-y-12">
-      
       <!-- Experience 1: Cresol -->
       <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group reveal-on-scroll">
         <div class="flex items-center justify-center w-9 h-9 rounded-full border-2 border-red-500 bg-zinc-950 text-red-500 text-sm font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 shadow-lg shadow-red-950/50">
@@ -559,20 +548,17 @@
           <p class="text-zinc-400 text-sm leading-relaxed mb-4">
             Optimized logistics pipelines and operational reporting routines through Python scripts and SQL queries.
           </p>
-          
           <blockquote class="bg-zinc-900/90 p-4 rounded-xl border-l-2 border-emerald-500 text-xs italic text-zinc-300 leading-relaxed">
             "Recognized for proactive problem solving, operational discipline, and technical agility in transforming manual tasks into structured automated pipelines."
           </blockquote>
         </div>
       </div>
-
     </div>
   </section>
 
   <!-- Interactive ROI Calculator Widget -->
   <section id="calculator" class="py-24 bg-zinc-950/80 border-t border-zinc-800">
     <div class="max-w-5xl mx-auto px-6">
-      
       <div class="glass-card rounded-3xl p-8 sm:p-12 border border-zinc-800 reveal-on-scroll">
         <div class="text-center max-w-xl mx-auto mb-10">
           <span class="text-emerald-400 font-mono text-xs font-semibold uppercase tracking-widest">Interactive Calculator</span>
@@ -581,7 +567,6 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          
           <!-- Controls -->
           <div class="space-y-6">
             <div>
@@ -622,10 +607,8 @@
               Based on standard 90% error reduction and direct automation execution metrics.
             </p>
           </div>
-
         </div>
       </div>
-
     </div>
   </section>
 
@@ -685,7 +668,6 @@
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       container.appendChild(renderer.domElement);
 
-      // Create Dot Sphere representation of Planet Earth (White/Light gray dots)
       const geometry = new THREE.SphereGeometry(1, 48, 48);
       
       const material = new THREE.PointsMaterial({
@@ -698,7 +680,6 @@
       const earthPoints = new THREE.Points(geometry, material);
       scene.add(earthPoints);
 
-      // Add atmospheric glow sphere (Sleek Dark Red atmospheric wireframe ring)
       const atmosphereGeo = new THREE.SphereGeometry(1.05, 32, 32);
       const atmosphereMat = new THREE.MeshBasicMaterial({
         color: 0xef4444,
@@ -709,11 +690,9 @@
       const atmosphere = new THREE.Mesh(atmosphereGeo, atmosphereMat);
       scene.add(atmosphere);
 
-      // Ambient Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
       scene.add(ambientLight);
 
-      // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
         earthPoints.rotation.y += 0.0018;
@@ -723,7 +702,6 @@
       }
       animate();
 
-      // Handle Resize
       window.addEventListener('resize', () => {
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
@@ -731,13 +709,11 @@
       });
     }
 
-    // Initialize 3D Earth after DOM loads
     document.addEventListener('DOMContentLoaded', init3DEarth);
   </script>
 
   <!-- Interactive ROI Calculator & Reveal Script -->
   <script>
-    // Reveal on scroll observer
     const observerOptions = { threshold: 0.15 };
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -749,7 +725,6 @@
 
     document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
 
-    // Interactive ROI Calculator Logic
     const pInput = document.getElementById('input-processes');
     const hInput = document.getElementById('input-hours');
     const cInput = document.getElementById('input-cost');
