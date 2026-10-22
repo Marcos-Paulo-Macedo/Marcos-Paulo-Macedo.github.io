@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RPA Challenger - 20 Níveis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* ===== Paleta: 5 cores x 3 variações (1 = claro, 2 = base, 3 = escuro) ===== */
+:root {
+    --blue-1:#dbeafe;  --blue-2:#2563eb;  --blue-3:#1e3a8a;
+    --green-1:#dcfce7; --green-2:#16a34a; --green-3:#14532d;
+    --red-1:#fee2e2;   --red-2:#dc2626;   --red-3:#7f1d1d;
+    --white-1:#ffffff; --white-2:#f4f6f8; --white-3:#d9dee4;
+    --black-1:#0b0b0c; --black-2:#25272b; --black-3:#6b7076;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; display: flex; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--white-2); color: var(--black-2); overflow: hidden; }
+.hidden { display: none !important; }
+button { font-family: inherit; }
+h3, h4 { margin: 0; }
+
+/* Sidebar */
+.side { width: 272px; flex-shrink: 0; background: var(--black-1); color: var(--white-1); display: flex; flex-direction: column; border-right: 1px solid var(--black-2); }
+.side-head { padding: 20px; text-align: center; border-bottom: 1px solid var(--black-2); }
+.side-head h1 { margin: 0; font-size: 22px; font-weight: 900; letter-spacing: .04em; }
+.side-head h1 span { color: var(--blue-2); }
+.side-head small { display: block; margin-top: 6px; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; color: var(--black-3); }
+.levels { flex: 1; overflow-y: auto; padding: 8px 12px; }
+.tier { font-size: 10px; font-weight: 900; letter-spacing: .15em; padding: 14px 8px 4px; }
+.t-easy { color: var(--green-2); } .t-mid { color: var(--blue-2); } .t-hard { color: var(--white-3); } .t-insane { color: var(--red-2); } .t-lab { color: var(--white-1); }
+.lvl { display: block; width: 100%; text-align: left; padding: 8px 14px; margin-bottom: 4px; border: 0; border-radius: 8px; background: transparent; color: var(--white-3); font-size: 14px; font-weight: 600; cursor: pointer; }
+.lvl:hover { background: var(--black-2); color: var(--white-1); }
+.lvl.active { background: var(--blue-2); color: var(--white-1); }
+.lvl i { font-style: normal; opacity: .5; margin-right: 8px; }
+.opts { border-top: 1px solid var(--black-2); font-size: 12px; color: var(--white-3); }
+.opts summary { padding: 12px 16px; cursor: pointer; font-weight: 700; color: var(--black-3); text-transform: uppercase; letter-spacing: .08em; }
+.opts .in { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.opts input[type=text] { width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--black-3); background: var(--black-2); color: var(--white-1); margin-top: 4px; }
+.opts button { padding: 8px; border: 0; border-radius: 6px; background: var(--black-2); color: var(--white-1); font-weight: 700; cursor: pointer; }
+.opts p { margin: 0; color: var(--black-3); }
+
+/* Main */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; min-width: 0; }
+.top { position: sticky; top: 0; z-index: 10; height: 76px; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; background: var(--white-1); border-bottom: 1px solid var(--white-3); }
+.top h2 { margin: 0; font-size: 19px; color: var(--black-1); }
+.top p { margin: 2px 0 0; font-size: 13px; color: var(--black-3); max-width: 560px; }
+.stats { display: flex; gap: 24px; }
+.stat { text-align: right; }
+.stat .k { font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--black-3); }
+.stat .v { font-size: 22px; font-weight: 900; font-family: ui-monospace, Menlo, Consolas, monospace; color: var(--blue-2); }
+.stat .v.ok { color: var(--green-2); } .stat .v.warn { color: var(--red-2); } .stat .v.dark { color: var(--black-2); }
+.content { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; padding: 28px; }
+.screen { width: 100%; max-width: 900px; margin: auto; }
+.screen-form { max-width: 1000px; }
+.card { background: var(--white-1); border: 1px solid var(--white-3); border-radius: 16px; padding: 32px; box-shadow: 0 4px 14px rgba(11,11,12,.08); }
+.center { text-align: center; }
+.lead { color: var(--black-3); font-size: 17px; line-height: 1.6; max-width: 640px; margin: 0 auto 16px; }
+.h1 { font-size: 28px; font-weight: 900; margin-bottom: 12px; color: var(--black-1); }
+.icon-circle { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 28px; background: var(--blue-1); color: var(--blue-2); }
+.icon-circle.big { width: 92px; height: 92px; font-size: 44px; border: 4px solid; }
+.icon-circle.ok { background: var(--green-1); color: var(--green-2); border-color: var(--green-2); }
+.icon-circle.bad { background: var(--red-1); color: var(--red-2); border-color: var(--red-2); }
+.howto, .rules { text-align: left; max-width: 700px; margin: 0 auto 16px; padding: 16px 20px; border-radius: 12px; font-size: 14px; line-height: 1.55; }
+.howto { background: var(--blue-1); border: 1px solid var(--blue-2); color: var(--blue-3); }
+.rules { background: var(--white-2); border: 1px solid var(--white-3); color: var(--black-2); }
+.howto h4, .rules h4 { margin-bottom: 8px; font-size: 14px; }
+.howto ol, .rules ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 5px; }
+.creds { max-width: 360px; margin: 0 auto 16px; text-align: left; font-size: 14px; background: var(--white-2); border: 1px solid var(--white-3); border-radius: 10px; padding: 12px 16px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.creds b { font-family: system-ui, sans-serif; display: block; margin-bottom: 4px; color: var(--black-1); }
+.row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 12px; }
+.ok-text { color: var(--green-2); font-weight: 600; font-size: 14px; margin-top: 12px; }
+
+/* Botões */
+.btn { padding: 12px 28px; border: 0; border-radius: 8px; font-weight: 700; font-size: 15px; cursor: pointer; color: var(--white-1); background: var(--black-1); transition: transform .1s; }
+.btn:hover { background: var(--black-2); } .btn:active { transform: scale(.97); }
+.btn-blue { background: var(--blue-2); } .btn-blue:hover { background: var(--blue-3); }
+.btn-green { background: var(--green-2); } .btn-green:hover { background: var(--green-3); }
+.btn-red { background: var(--red-2); } .btn-red:hover { background: var(--red-3); }
+.btn-light { background: var(--white-3); color: var(--black-2); } .btn-light:hover { background: var(--white-3); filter: brightness(.94); }
+.btn-sm { padding: 8px 16px; font-size: 14px; }
+
+/* Alertas */
+.alert { padding: 10px 14px; border-radius: 10px; font-size: 14px; margin-bottom: 14px; }
+.alert-warn { background: var(--blue-1); border: 1px solid var(--blue-2); color: var(--blue-3); font-weight: 600; }
+.alert-err { background: var(--red-1); border: 1px solid var(--red-2); color: var(--red-3); font-weight: 500; }
+
+/* Loader */
+.loading { position: absolute; inset: 0; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(244,246,248,.9); }
+.loader { border: 4px solid var(--white-3); border-top: 4px solid var(--blue-2); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 14px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { font-weight: 700; color: var(--black-3); }
+
+/* Login */
+.login { max-width: 420px; }
+.login label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.login-input { width: 100%; padding: 10px 12px; border: 1px solid var(--white-3); border-radius: 8px; margin-bottom: 14px; font-size: 15px; outline: none; }
+.login-input:focus { border-color: var(--blue-2); box-shadow: 0 0 0 2px var(--blue-1); }
+.link-btn { margin-top: 12px; background: none; border: 0; color: var(--black-3); text-decoration: underline; font-size: 12px; cursor: pointer; }
+
+/* Barra de ferramentas e tabela de dados */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--white-3); }
+.toolbar .grp { display: flex; align-items: center; gap: 12px; }
+.sent { font-size: 14px; font-weight: 700; color: var(--black-3); }
+.tbl-card { margin-bottom: 20px; padding: 16px; border: 1px solid var(--white-3); border-radius: 12px; background: var(--white-2); }
+.tbl-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.tbl-head input { padding: 7px 10px; border: 1px solid var(--white-3); border-radius: 8px; font-size: 14px; }
+.tbl-wrap { overflow-x: auto; background: var(--white-1); border: 1px solid var(--white-3); border-radius: 8px; }
+table.data { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data th { text-align: left; padding: 8px 10px; background: var(--black-2); color: var(--white-1); white-space: nowrap; cursor: pointer; user-select: none; }
+table.data td { padding: 7px 10px; border-top: 1px solid var(--white-3); white-space: nowrap; }
+table.data tr:nth-child(even) td { background: var(--white-2); }
+.col-hide { display: none; }
+.tbl-foot { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 10px; font-size: 13px; }
+
+/* Overlay / toast */
+.ov-backdrop { position: fixed; inset: 0; background: rgba(11,11,12,.65); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.ov-modal { position: relative; background: var(--white-1); border-radius: 14px; padding: 24px; max-width: 26rem; width: 100%; box-shadow: 0 25px 50px -12px rgba(0,0,0,.45); }
+.ov-btn { padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 14px; border: 1px solid var(--white-3); background: var(--white-1); cursor: pointer; }
+.ov-btn.primary { background: var(--blue-2); color: var(--white-1); border-color: var(--blue-2); }
+.ov-x { position: absolute; width: 20px; height: 20px; font-size: 11px; line-height: 18px; border-radius: 50%; background: var(--white-3); color: var(--black-2); text-align: center; cursor: pointer; border: 0; padding: 0; }
+#toast-root { position: fixed; right: 16px; bottom: 16px; z-index: 120; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--black-1); color: var(--white-1); padding: 12px 16px; border-radius: 8px; font-size: 14px; max-width: 20rem; box-shadow: 0 10px 15px -3px rgba(0,0,0,.3); }
+
+.res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.res-box { background: var(--white-2); border: 1px solid var(--white-3); border-radius: 14px; padding: 18px; }
+.res-box .k { font-size: 11px; text-transform: uppercase; font-weight: 800; letter-spacing: .1em; color: var(--black-3); margin-bottom: 6px; }
+.res-box .v { font-size: 40px; font-weight: 900; color: var(--blue-2); }
+.res-box .v.alt { color: var(--black-2); }
+.details { text-align: left; font-size: 14px; color: var(--black-2); margin-bottom: 22px; display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 800px) {
+    body { flex-direction: column; overflow: auto; }
+    .side { width: 100%; max-height: 220px; }
+    .stats { gap: 12px; } .top { padding: 0 14px; } .content { padding: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- CSS dos formulários (injetado em light DOM, shadow DOM ou iframe) -->
+<template id="form-styles">
+<style>
+    :host, :root {
+        --blue-1:#dbeafe;  --blue-2:#2563eb;  --blue-3:#1e3a8a;
+        --green-1:#dcfce7; --green-2:#16a34a; --green-3:#14532d;
+        --red-1:#fee2e2;   --red-2:#dc2626;   --red-3:#7f1d1d;
+        --white-1:#ffffff; --white-2:#f4f6f8; --white-3:#d9dee4;
+        --black-1:#0b0b0c; --black-2:#25272b; --black-3:#6b7076;
+    }
+    * { box-sizing: border-box; font-family: system-ui, sans-serif; }
+    .hidden { display: none !important; }
+    .fgrid { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; padding: 8px 0; }
+    @media (min-width: 768px) { .fgrid { grid-template-columns: repeat(2, 1fr); } }
+    .fspan2 { grid-column: 1 / -1; }
+    .label { display: block; font-size: 14px; font-weight: 600; color: var(--black-2); margin-bottom: 4px; }
+    .hint { display: block; font-size: 12px; color: var(--black-3); margin: -2px 0 6px; font-weight: 400; }
+    .input-base { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--white-3); background: var(--white-1); color: var(--black-2); font-size: 15px; outline: none; }
+    .input-base:focus { border-color: var(--blue-2); box-shadow: 0 0 0 2px var(--blue-1); }
+    textarea.input-base { resize: vertical; min-height: 64px; }
+    input[type=color].input-base { padding: 2px; height: 42px; }
+    .radio-group, .checkbox-group { display: flex; gap: 16px; margin-top: 8px; flex-wrap: wrap; }
+    .radio-label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+    .invoice-box { background: var(--blue-1); border: 1px solid var(--blue-2); padding: 14px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .invoice-box .cap { font-size: 13px; font-weight: 700; color: var(--blue-3); display: block; margin-bottom: 4px; }
+    .invoice-text { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 18px; font-weight: bold; color: var(--blue-3); background: var(--white-1); padding: 4px 8px; border-radius: 6px; }
+    .ocr-canvas { background: var(--white-2); border: 2px dashed var(--black-3); border-radius: 8px; cursor: crosshair; }
+
+    /* campos customizados (nível 7+) */
+    .custom-input { width: 100%; min-height: 42px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--black-3); background: var(--white-1); cursor: text; outline: none; }
+    .custom-input:focus { border-color: var(--blue-3); box-shadow: 0 0 0 2px var(--blue-1); }
+    .custom-radio-group { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
+    .custom-radio { padding: 7px 16px; border: 1px solid var(--white-3); border-radius: 999px; cursor: pointer; user-select: none; background: var(--white-1); }
+    .custom-radio.selected { background: var(--blue-3); color: var(--white-1); border-color: var(--blue-3); }
+    .custom-check { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; margin-top: 8px; }
+    .custom-check-box { width: 20px; height: 20px; border: 2px solid var(--black-3); border-radius: 4px; display: flex; align-items: center; justify-content: center; background: var(--white-1); }
+    .custom-check.selected .custom-check-box { background: var(--blue-3); border-color: var(--blue-3); }
+    .custom-check.selected .custom-check-box::after { content: '✓'; color: var(--white-1); font-size: 13px; font-weight: bold; }
+    .custom-select { position: relative; width: 100%; user-select: none; }
+    .select-trigger { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--white-3); background: var(--white-1); cursor: pointer; }
+    .select-options { display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--white-1); border: 1px solid var(--white-3); border-radius: 8px; margin-top: 4px; z-index: 50; box-shadow: 0 4px 6px rgba(11,11,12,.12); max-height: 150px; overflow-y: auto; }
+    .select-options.open { display: block; }
+    .select-item { padding: 10px 12px; cursor: pointer; }
+    .select-item:hover { background: var(--blue-1); }
+
+    /* componentes novos */
+    .cmp-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; padding: 10px; border: 1px solid var(--white-3); border-radius: 8px; background: var(--white-1); }
+    .cmp-row { display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 4px 6px; border-radius: 6px; }
+    .cmp-row:hover { background: var(--blue-1); }
+    select[multiple].input-base { padding: 6px; }
+    .dd { position: relative; }
+    .dd-trigger { width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--black-3); background: var(--white-1); cursor: pointer; font-size: 15px; }
+    .dd-trigger::after { content: '▾'; float: right; color: var(--black-3); }
+    .dd-panel { position: absolute; z-index: 40; left: 0; right: 0; top: 100%; margin-top: 4px; padding: 6px; background: var(--white-1); border: 1px solid var(--black-3); border-radius: 8px; box-shadow: 0 8px 16px rgba(11,11,12,.18); }
+    .combo { position: relative; }
+    .combo-list { position: absolute; z-index: 40; left: 0; right: 0; top: 100%; margin: 4px 0 0; padding: 4px; list-style: none; background: var(--white-1); border: 1px solid var(--black-3); border-radius: 8px; max-height: 160px; overflow-y: auto; }
+    .combo-list li { padding: 8px 10px; cursor: pointer; border-radius: 6px; }
+    .combo-list li:hover { background: var(--blue-1); }
+    .slider { display: flex; align-items: center; gap: 12px; }
+    .slider input { flex: 1; accent-color: var(--blue-2); }
+    .slider output { min-width: 28px; text-align: right; font-weight: 800; color: var(--blue-3); }
+    .switch-wrap { display: flex; align-items: center; gap: 10px; }
+    .switch { position: relative; width: 52px; height: 28px; border-radius: 999px; border: 0; background: var(--black-3); cursor: pointer; padding: 0; }
+    .switch .knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: var(--white-1); transition: left .15s; }
+    .switch.on { background: var(--green-2); } .switch.on .knob { left: 27px; }
+    .switch-text { font-size: 14px; color: var(--black-3); }
+    .stars { display: flex; gap: 4px; }
+    .star { border: 0; background: none; font-size: 28px; line-height: 1; color: var(--white-3); cursor: pointer; padding: 0 2px; }
+    .star.on { color: var(--blue-2); }
+    .stepper { display: inline-flex; align-items: center; border: 1px solid var(--black-3); border-radius: 8px; overflow: hidden; background: var(--white-1); }
+    .stepper button { width: 40px; height: 40px; border: 0; background: var(--white-2); font-size: 20px; cursor: pointer; }
+    .stepper button:hover { background: var(--blue-1); }
+    .stepper output { min-width: 48px; text-align: center; font-weight: 800; }
+    .seg { display: inline-flex; border: 1px solid var(--black-3); border-radius: 8px; overflow: hidden; }
+    .seg-btn { padding: 9px 16px; border: 0; background: var(--white-1); cursor: pointer; font-size: 14px; border-right: 1px solid var(--white-3); }
+    .seg-btn:last-child { border-right: 0; }
+    .seg-btn.on { background: var(--blue-2); color: var(--white-1); }
+    .pin { display: flex; gap: 10px; }
+    .pin-box { width: 48px; height: 52px; text-align: center; font-size: 22px; font-weight: 800; border: 2px solid var(--black-3); border-radius: 8px; outline: none; }
+    .pin-box:focus { border-color: var(--blue-2); }
+    .tags { padding: 8px; border: 1px solid var(--black-3); border-radius: 8px; background: var(--white-1); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .tag-chips { display: contents; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-1); color: var(--blue-3); border-radius: 999px; padding: 4px 6px 4px 12px; font-size: 13px; font-weight: 600; }
+    .chip-x { border: 0; background: var(--blue-2); color: var(--white-1); width: 18px; height: 18px; border-radius: 50%; font-size: 12px; line-height: 16px; cursor: pointer; padding: 0; }
+    .tag-input { flex: 1; min-width: 140px; border: 0; outline: none; padding: 6px; font-size: 14px; }
+    .dnd { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .dnd-title { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--black-3); margin-bottom: 6px; }
+    .dnd-src, .dnd-zone { min-height: 150px; padding: 8px; border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .dnd-src { background: var(--white-2); border: 2px solid var(--white-3); }
+    .dnd-zone { background: var(--green-1); border: 2px dashed var(--green-2); }
+    .dnd-item { padding: 9px 12px; background: var(--white-1); border: 1px solid var(--black-3); border-radius: 8px; cursor: grab; user-select: none; font-weight: 600; }
+    .dnd-item.dragging { background: var(--blue-1); border-color: var(--blue-2); cursor: grabbing; }
+    .sortl { padding: 10px; border: 1px solid var(--white-3); border-radius: 10px; background: var(--white-2); }
+    .sort-ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .sort-item::before { content: '⋮⋮'; margin-right: 10px; color: var(--black-3); }
+
+    /* widgets de extração */
+    .src-box { border: 1px solid var(--white-3); background: var(--white-2); border-radius: 10px; padding: 10px; margin-bottom: 8px; }
+    .src-title { font-size: 12px; font-weight: 700; color: var(--black-3); margin-bottom: 6px; }
+    .src-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 10px; border-radius: 6px; background: var(--white-1); border: 1px solid var(--white-3); margin-bottom: 4px; font-size: 14px; }
+    .src-inv { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 700; }
+    .src-host { position: relative; display: inline-block; width: 22px; height: 22px; border-radius: 50%; background: var(--blue-2); color: var(--white-1); text-align: center; line-height: 22px; font-size: 13px; cursor: help; }
+    .src-tip { position: absolute; right: 28px; top: -4px; white-space: nowrap; background: var(--black-1); color: var(--white-1); padding: 5px 10px; border-radius: 6px; font-size: 13px; z-index: 30; }
+    .ctx-row { cursor: context-menu; } .dbl-row { cursor: pointer; user-select: none; }
+    .ctx-menu { position: fixed; z-index: 60; min-width: 160px; background: var(--white-1); border: 1px solid var(--black-3); border-radius: 8px; box-shadow: 0 8px 16px rgba(11,11,12,.25); padding: 4px; }
+    .ctx-item { padding: 7px 12px; font-size: 14px; border-radius: 6px; cursor: pointer; }
+    .ctx-item:hover { background: var(--blue-1); }
+    .scroll-box { height: 96px; overflow-y: auto; border: 1px solid var(--white-3); border-radius: 8px; background: var(--white-1); padding: 4px; }
+    .muted { color: var(--black-3); }
+
+    /* layouts: wizard, tabs, accordion */
+    .wiz-label { font-size: 12px; font-weight: 800; color: var(--black-3); letter-spacing: .1em; }
+    .wiz-bar { height: 6px; background: var(--white-3); border-radius: 999px; margin-top: 6px; }
+    .wiz-bar div { height: 6px; background: var(--blue-2); border-radius: 999px; }
+    .tab-head { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--white-3); }
+    .tab-btn { padding: 9px 16px; border: 0; background: transparent; font-size: 14px; font-weight: 700; color: var(--black-3); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+    .tab-btn.active { color: var(--blue-2); border-bottom-color: var(--blue-2); }
+    .acc-head { display: block; width: 100%; text-align: left; margin-top: 8px; padding: 12px 14px; border: 1px solid var(--white-3); border-radius: 8px; background: var(--white-2); font-size: 14px; font-weight: 800; color: var(--black-2); cursor: pointer; }
+    .acc-head::after { content: '＋'; float: right; color: var(--blue-2); }
+    .acc-head.open { background: var(--blue-1); } .acc-head.open::after { content: '－'; }
+    .sec-panel { padding: 8px 4px 4px; }
+
+    .svg-btn { cursor: pointer; transition: transform .1s; display: block; margin-top: 24px; margin-left: auto; }
+    .svg-btn:active { transform: scale(.98); }
+    .hp-field { opacity: 0; position: absolute; top: -9999px; left: -9999px; height: 0; width: 0; pointer-events: none; }
+</style>
+</template>
+
+<!-- Sidebar -->
+<nav class="side">
+    <div class="side-head">
+        <h1>RPA <span>CHALLENGER</span></h1>
+        <small>v3 · 20 níveis</small>
+    </div>
+    <div class="levels" id="level-selector"></div>
+    <details class="opts">
+        <summary>⚙ Opções de teste</summary>
+        <div class="in">
+            <label>Seed (dados reproduzíveis)<input id="opt-seed" type="text" placeholder="ex: 42"></label>
+            <label><input id="opt-noantibot" type="checkbox"> Desativar anti-bot (debug)</label>
+            <label><input id="opt-webdriver" type="checkbox"> Bloquear navigator.webdriver</label>
+            <button onclick="downloadLog()">⬇ Baixar log de eventos (JSON)</button>
+            <p>Seed e opções valem a partir da próxima seleção de nível.</p>
+        </div>
+    </details>
+</nav>
+
+<!-- Main -->
+<main class="main">
+    <header class="top">
+        <div>
+            <h2 id="level-title">Level 1</h2>
+            <p id="level-desc"></p>
+        </div>
+        <div class="stats">
+            <div class="stat hidden" id="ui-session"><div class="k">Sessão expira em</div><div class="v ok" id="session-val">--:--</div></div>
+            <div class="stat hidden" id="ui-timer"><div class="k">Tempo</div><div class="v" id="timer-val">00:00.000</div></div>
+            <div class="stat hidden" id="ui-progress"><div class="k" id="progress-label">Progress</div><div class="v dark" id="progress-text">1 / 5</div></div>
+        </div>
+    </header>
+
+    <div class="content">
+
+        <!-- Briefing -->
+        <div id="screen-start" class="screen card center">
+            <div class="icon-circle">⚡</div>
+            <h3 class="h1">Mission Briefing</h3>
+            <p id="brief-text" class="lead"></p>
+            <div class="howto"><h4>🧭 Como resolver este nível</h4><ol id="howto-list"></ol></div>
+            <div class="rules hidden" id="brief-rules-wrap"><h4>📏 Regras do jogo</h4><ul id="brief-rules"></ul></div>
+            <div id="brief-creds" class="creds hidden"><b>Credenciais do portal</b>Usuário: rpa.bot<br>Senha: S3nh@Forte!</div>
+            <div class="row">
+                <button id="btn-csv" class="btn btn-green" onclick="downloadDataset()">⬇ Download Data (CSV)</button>
+                <button id="btn-start" class="btn btn-blue" onclick="startChallenge()">Start Challenge →</button>
+            </div>
+            <div id="data-status" class="ok-text hidden">Dataset generated and loaded in memory!</div>
+        </div>
+
+        <!-- Loader -->
+        <div id="screen-loading" class="loading hidden">
+            <div class="loader"></div>
+            <p>Initializing Dynamic DOM...</p>
+        </div>
+
+        <!-- Login / 2FA -->
+        <div id="screen-login" class="screen card login hidden">
+            <h3 class="h1" style="font-size:24px;margin-bottom:4px">Portal Corporativo</h3>
+            <p style="margin:0 0 16px;color:var(--black-3);font-size:14px">Autenticação necessária</p>
+            <div id="login-banner" class="alert alert-warn hidden"></div>
+            <div id="login-error" class="alert alert-err hidden"></div>
+            <form id="login-form" onsubmit="return doLogin(event)" autocomplete="off">
+                <input type="hidden" id="login-csrf" name="csrf_token">
+                <label for="login-user">Usuário</label>
+                <input class="login-input" id="login-user" name="username" type="text" autocomplete="off">
+                <label for="login-pass">Senha</label>
+                <input class="login-input" id="login-pass" name="password" type="password" autocomplete="off">
+                <button type="submit" id="login-btn" class="btn" style="width:100%">Entrar</button>
+            </form>
+            <form id="twofa-form" class="hidden" onsubmit="return do2FA(event)" autocomplete="off">
+                <p style="font-size:14px;color:var(--black-3);margin:0 0 12px">Digite o código de 6 dígitos enviado por e-mail. Ele aparece por poucos segundos.</p>
+                <input class="login-input" id="twofa-code" name="otp" type="text" inputmode="numeric" maxlength="6" autocomplete="off">
+                <button type="submit" id="twofa-btn" class="btn" style="width:100%">Verificar</button>
+                <button type="button" id="twofa-resend" class="link-btn" onclick="send2FA()">Reenviar código</button>
+            </form>
+        </div>
+
+        <!-- Formulário -->
+        <div id="screen-form" class="screen screen-form card hidden">
+            <div id="toolbar" class="toolbar hidden">
+                <button id="btn-excel" class="btn btn-green btn-sm" onclick="downloadExcel()">📥 Baixar planilha (Excel)</button>
+                <div class="grp">
+                    <span id="sent-count" class="sent"></span>
+                    <button id="btn-finish" class="btn btn-blue btn-sm" onclick="finishQueue()">Finalizar ✓</button>
+                </div>
+            </div>
+            <div id="table-card" class="tbl-card hidden">
+                <div class="tbl-head"><h4>📋 Clientes</h4><input id="tbl-filter" type="text" placeholder="Buscar na tabela..."></div>
+                <div class="tbl-wrap"><table id="data-table" class="data"></table></div>
+                <div class="tbl-foot"><button id="tbl-prev" class="btn btn-light btn-sm">‹ Anterior</button><span id="tbl-page"></span><button id="tbl-next" class="btn btn-light btn-sm">Próxima ›</button></div>
+            </div>
+            <div id="form-error" class="alert alert-err hidden" role="alert"></div>
+            <div id="form-host"></div>
+            <div id="native-submit-wrapper" class="row" style="justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--white-3)"></div>
+        </div>
+
+        <!-- Upload de relatório -->
+        <div id="screen-upload" class="screen card center hidden" style="max-width:600px">
+            <h3 class="h1" style="font-size:24px">Enviar relatório de conciliação</h3>
+            <p style="font-size:14px;color:var(--black-3);line-height:1.6">Envie um arquivo <b>.xlsx</b> com as colunas <code>Fatura</code>, <code>Status</code> e <code>Motivo</code>, com <b>uma linha para cada registro da planilha original</b>.<br>Status: PROCESSADO ou IGNORADO. Motivo (quando ignorado): CANCELADO, DUPLICADO ou CPF_INVALIDO.</p>
+            <input id="report-file" type="file" accept=".xlsx,.xls" onchange="onReportSelected(this)">
+            <div id="upload-error" class="alert alert-err hidden" style="margin-top:14px"></div>
+        </div>
+
+        <!-- Bloqueado -->
+        <div id="screen-blocked" class="screen card center hidden" style="max-width:640px;border:2px solid var(--red-2)">
+            <div class="icon-circle big bad">⚠</div>
+            <h3 class="h1" style="color:var(--red-2)">Access Denied (WAF / Anti-Bot)</h3>
+            <p id="block-reason" class="lead"></p>
+            <button class="btn" onclick="resetApp()">Tentar Novamente</button>
+        </div>
+
+        <!-- Resultado -->
+        <div id="screen-results" class="screen card center hidden" style="max-width:660px">
+            <div id="result-icon" class="icon-circle big"></div>
+            <h3 class="h1" id="result-title">Challenge Complete</h3>
+            <p style="color:var(--black-3);margin:0 0 22px;font-weight:500">Evaluation of Bot Performance</p>
+            <div class="res-grid">
+                <div class="res-box"><div class="k">Accuracy</div><div class="v" id="res-accuracy">0%</div></div>
+                <div class="res-box"><div class="k">Total Time</div><div class="v alt" id="res-time">0.0s</div></div>
+            </div>
+            <div id="res-details" class="details"></div>
+            <button class="btn" onclick="resetApp()">Attempt Another Level</button>
+        </div>
+    </div>
+</main>
+
+<div id="overlay-root"></div>
+<div id="toast-root"></div>
+
+<script>
+/* =====================================================================
+   CONSTANTES E OPÇÕES DE DADOS
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const LOGIN = { user: 'rpa.bot', pass: 'S3nh@Forte!' };
+const PAGE = 5;
+const TIERS = {
+    easy:   { label: 'FÁCIL',   cls: 't-easy' },
+    mid:    { label: 'MÉDIO',   cls: 't-mid' },
+    hard:   { label: 'DIFÍCIL', cls: 't-hard' },
+    insane: { label: 'INSANO',  cls: 't-insane' },
+    lab:    { label: 'LABORATÓRIO DE COMPONENTES', cls: 't-lab' }
+};
+
+const OPT = {
+    Skills: ['Python', 'Excel', 'SQL', 'JavaScript', 'Power BI', 'Java'],
+    Languages: ['Português', 'Inglês', 'Espanhol', 'Alemão', 'Francês'],
+    Interests: ['Cloud', 'IA', 'Segurança', 'Dados'],
+    Plan: ['Basic', 'Pro', 'Enterprise'],
+    Countries: ['Brasil', 'Argentina', 'Chile', 'Portugal', 'Espanha', 'Noruega', 'Alemanha', 'México', 'Canadá', 'Japão', 'Uruguai', 'Peru'],
+    Billing: ['Mensal', 'Trimestral', 'Anual'],
+    Colors: ['#2563eb', '#16a34a', '#dc2626', '#1e3a8a', '#14532d', '#7f1d1d'],
+    Tasks: ['Backup', 'Deploy', 'Review', 'Report'],
+    Ranks: ['Alpha', 'Beta', 'Gamma', 'Delta'],
+    Tags: ['externo', 'novo', 'revisar', 'urgente', 'vip'],
+    Notes: ['Cliente prioritário, ligar após 14h', 'Solicitar contrato assinado', 'Aguardando aprovação do financeiro', 'Enviar proposta revisada', 'Reunião de alinhamento na sexta-feira']
+};
+
+const MOCK = {
+    fnames: ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'Carlos', 'Ana', 'Pedro', 'Julia'],
+    lnames: ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Silva', 'Souza', 'Costa'],
+    companies: ['Acme Corp', 'Stark Industries', 'Wayne Ent', 'Umbrella Corp', 'Cyberdyne', 'Initech', 'Globex'],
+    roles: ['Developer', 'Analyst', 'Manager'],
+    deps: ['IT', 'HR', 'Finance', 'Operations']
+};
+
+/* Campos do formulário. step = etapa (wizard) / aba / seção */
+const FDEF = {
+    FirstName:     { kind: 'text', label: 'First Name', col: 'Nome', step: 1 },
+    LastName:      { kind: 'text', label: 'Last Name', col: 'Sobrenome', step: 1 },
+    Email:         { kind: 'text', label: 'Email Address', type: 'email', col: 'E-mail', step: 1 },
+    Phone:         { kind: 'text', label: 'Phone Number', col: 'Telefone', step: 1 },
+    Company:       { kind: 'text', label: 'Company Name', col: 'Empresa', step: 2 },
+    Role:          { kind: 'radio', label: 'Job Role', col: 'Cargo', step: 2 },
+    SkillRPA:      { kind: 'check', label: 'RPA', col: 'RPA', step: 2 },
+    SkillJS:       { kind: 'check', label: 'JavaScript', col: 'JavaScript', step: 2 },
+    Department:    { kind: 'select', label: 'Department', col: 'Departamento', step: 2 },
+    InvoiceNumber: { kind: 'text', label: 'Transcribe Invoice Number', col: 'Fatura', step: 3 },
+    CPF:           { kind: 'text', label: 'CPF (000.000.000-00)', step: 3 },
+    Amount:        { kind: 'text', label: 'Valor em R$ (ex: 1.234,56)', step: 3 },
+    Date:          { kind: 'text', label: 'Data (dd/mm/aaaa)', step: 3 },
+    Skills:        { kind: 'checklist', label: 'Skills (lista com checkboxes)', hint: 'Marque todas as habilidades indicadas', opts: OPT.Skills, step: 4, wide: true },
+    Languages:     { kind: 'multiselect', label: 'Languages (lista de seleção múltipla)', hint: 'Ctrl/Cmd + clique para vários', opts: OPT.Languages, step: 4 },
+    Interests:     { kind: 'dropcheck', label: 'Interests (dropdown com checkboxes)', opts: OPT.Interests, step: 4 },
+    Plan:          { kind: 'dropradio', label: 'Plan (dropdown com radio)', opts: OPT.Plan, step: 4 },
+    Country:       { kind: 'combo', label: 'Country (autocomplete)', hint: 'Digite parte do nome e escolha a sugestão', opts: OPT.Countries, step: 4 },
+    Experience:    { kind: 'slider', label: 'Experience in years (slider 0–20)', step: 5 },
+    Remote:        { kind: 'toggle', label: 'Remote work (toggle)', hint: 'Yes = ligado', step: 5 },
+    Rating:        { kind: 'stars', label: 'Rating (estrelas)', step: 5 },
+    StartDate:     { kind: 'date', label: 'Start Date (calendário)', step: 5 },
+    Time:          { kind: 'time', label: 'Meeting Time (relógio)', step: 5 },
+    Color:         { kind: 'color', label: 'Brand Color (seletor de cor)', step: 5 },
+    Notes:         { kind: 'textarea', label: 'Notes (textarea)', step: 5, wide: true },
+    Quantity:      { kind: 'stepper', label: 'Quantity (botões − / +)', step: 5 },
+    Billing:       { kind: 'segmented', label: 'Billing (botões segmentados)', opts: OPT.Billing, step: 5 },
+    PIN:           { kind: 'pin', label: 'PIN (4 caixas)', step: 6 },
+    Labels:        { kind: 'tags', label: 'Labels (tags: digite e pressione Enter)', step: 6, wide: true },
+    Priority:      { kind: 'dragzone', label: 'Priority (arrastar e soltar)', hint: 'Arraste as 3 tarefas indicadas para a caixa verde, na ordem dada (1º primeiro)', opts: OPT.Tasks, step: 6, wide: true },
+    Ranking:       { kind: 'sortlist', label: 'Ranking (lista ordenável)', hint: 'Arraste os itens até ficarem na ordem dada', opts: OPT.Ranks, step: 6, wide: true },
+    HoverCode:     { kind: 'srctext', label: 'Código via hover (tooltip)', step: 7, wide: true },
+    CtxCode:       { kind: 'srctext', label: 'Código via botão direito (menu de contexto)', step: 7, wide: true },
+    DblCode:       { kind: 'srctext', label: 'Código via duplo clique', step: 7, wide: true },
+    ScrollCode:    { kind: 'srctext', label: 'Código via rolagem infinita', step: 7, wide: true }
+};
+const COMPKINDS = ['checklist', 'multiselect', 'dropcheck', 'dropradio', 'combo', 'slider', 'toggle', 'stars', 'date', 'time', 'color', 'textarea', 'stepper', 'segmented', 'pin', 'tags', 'dragzone', 'sortlist'];
+const BASE = ['FirstName', 'LastName', 'Email', 'Phone', 'Company'];
+const EXTRA = ['Role', 'SkillRPA', 'SkillJS', 'Department', 'InvoiceNumber'];
+const FIN = ['CPF', 'Amount', 'Date'];
+const GA = ['Skills', 'Languages', 'Interests', 'Plan', 'Country'];
+const GB = ['Experience', 'Remote', 'Rating', 'StartDate', 'Time', 'Color', 'Notes', 'Quantity', 'Billing'];
+const GC = ['PIN', 'Labels', 'Priority', 'Ranking'];
+const GW = ['HoverCode', 'CtxCode', 'DblCode', 'ScrollCode'];
+const STEP_NAME = { 1: 'Pessoal', 2: 'Empresa', 3: 'Financeiro', 4: 'Seleções', 5: 'Controles', 6: 'Avançado', 7: 'Extração' };
+
+function activeFields(f) {
+    const k = BASE.slice();
+    if (f.extra) k.push(...EXTRA);
+    if (f.fin) k.push(...FIN);
+    const c = f.comps || '';
+    if (c.includes('A')) k.push(...GA);
+    if (c.includes('B')) k.push(...GB);
+    if (c.includes('C')) k.push(...GC);
+    if (c.includes('W')) k.push(...GW);
+    return k;
+}
+function stepsOf(f) { return [...new Set(activeFields(f).map(k => FDEF[k].step))].sort((a, b) => a - b); }
+function stepName(s, f) { return s === 3 && !f.fin ? 'Fatura' : STEP_NAME[s]; }
+
+/* =====================================================================
+   NÍVEIS (cada um com instruções de como resolver)
+   ===================================================================== */
+const LEVELS = [
+    { id: 1, tier: 'easy', name: 'Level 1: Novice', desc: 'Formulário estático. Inputs simples.', flags: {},
+      howto: ['Clique em “Download Data (CSV)” e abra o arquivo (5 linhas).', 'Clique em Start Challenge.', 'Para cada linha do CSV, preencha First Name, Last Name, Email Address, Phone Number e Company Name.', 'Clique em Submit Record e repita até a 5ª linha.'] },
+    { id: 2, tier: 'easy', name: 'Level 2: Apprentice', desc: 'Radio, checkbox, select e extração de texto estático.', flags: { extra: true },
+      howto: ['Faça o mesmo do nível 1 e acrescente:', 'Job Role: escolha o radio com o mesmo valor do CSV.', 'Core Skills: marque RPA e/ou JavaScript quando o CSV disser Yes.', 'Department: selecione no dropdown.', 'Invoice: copie o texto do quadro “Extract This ID” para o campo de fatura (ou use a coluna InvoiceNumber do CSV).'] },
+    { id: 3, tier: 'easy', name: 'Level 3: Shuffler', desc: 'A ordem dos elementos muda a cada carga.', flags: { extra: true, shuffle: true },
+      howto: ['Mesmos passos do nível 2.', 'A posição dos campos muda a cada linha: localize cada campo pelo texto do label (getByLabel / XPath por texto), nunca pela posição na tela.'] },
+    { id: 4, tier: 'mid', name: 'Level 4: Shapeshifter', desc: 'Layout estático, mas IDs e names são aleatórios.', flags: { extra: true, dynId: true },
+      howto: ['Os atributos id e name mudam a cada carga: não use seletores por id.', 'Encontre os campos pelo label associado (atributo for), pelo texto ou por posição relativa estável.', 'Os radios usam name aleatório: selecione pelo value.'] },
+    { id: 5, tier: 'mid', name: 'Level 5: Shadow Realm', desc: 'IDs dinâmicos + ordem aleatória dentro de um Shadow DOM aberto.', flags: { extra: true, shuffle: true, dynId: true, shadow: true },
+      howto: ['O formulário está num Shadow DOM aberto: seletores CSS comuns não enxergam dentro dele.', 'Playwright atravessa shadow roots automaticamente; no Selenium use element.shadow_root (Selenium 4) ou execute_script com element.shadowRoot.', 'Depois, combine com as dicas dos níveis 3 e 4.'] },
+    { id: 6, tier: 'mid', name: 'Level 6: Patience', desc: 'L5 + atrasos AJAX simulados e honeypot invisível.', flags: { extra: true, shuffle: true, dynId: true, shadow: true, delay: true, honeypot: true },
+      howto: ['Entre uma linha e outra aparece um loader: use espera explícita pelo formulário (wait_for_selector / WebDriverWait), não sleep fixo.', 'Existe um campo “Website” invisível (honeypot): NÃO o preencha, senão a linha vale zero.', 'Percorra apenas campos visíveis e rotulados.'] },
+    { id: 7, tier: 'mid', name: 'Level 7: The Illusionist', desc: 'Sem inputs nativos! Contenteditable e componentes feitos de div.', flags: { extra: true, customEls: true },
+      howto: ['Não há <input>: os campos de texto são <div contenteditable>. Clique no campo e digite pelo teclado (fill funciona em contenteditable no Playwright).', 'Radio e checkbox são divs clicáveis: clique para marcar.', 'O Department é um dropdown feito de divs: clique no gatilho e depois na opção desejada.'] },
+    { id: 8, tier: 'hard', name: 'Level 8: Inception', desc: 'Campos dentro de um iframe gerado dinamicamente.', flags: { extra: true, iframe: true },
+      howto: ['O formulário vive dentro de um iframe: troque o contexto antes de preencher (driver.switch_to.frame / page.frame_locator).', 'O botão Submit Record fica FORA do iframe: volte ao contexto principal (switch_to.default_content) para clicar.', 'A cada linha o iframe é recriado: refaça a troca de contexto.'] },
+    { id: 9, tier: 'hard', name: 'Level 9: Visual Arts', desc: 'Invoice ID desenhado num canvas ruidoso (exige OCR).', flags: { extra: true, canvasOcr: true },
+      howto: ['O número da fatura não está em texto: é desenhado num <canvas> com ruído.', 'Capture o canvas (screenshot do elemento ou canvas.toDataURL), aplique OCR (ex.: Tesseract, com pré-processamento em tons de cinza) e digite o ID lido.', 'Os outros campos vêm do CSV; a fatura do CSV ajuda a validar o OCR.'] },
+    { id: 10, tier: 'hard', name: 'Level 10: THE BOSS', desc: 'Shadow DOM + shuffle + custom elements + OCR + botão SVG.', flags: { extra: true, shuffle: true, dynId: true, shadow: true, delay: true, honeypot: true, customEls: true, canvasOcr: true, svgSubmit: true },
+      howto: ['Combine as dicas dos níveis 3 a 9: Shadow DOM, ordem aleatória, IDs dinâmicos, loader, honeypot, campos customizados e OCR do canvas.', 'O botão de envio é um <svg> dentro do formulário: clique nele (o botão nativo está oculto).'] },
+    { id: 11, tier: 'insane', name: 'Level 11: The Singularity', desc: 'Anti-bot: velocidade, trajetória do mouse e cliques confiáveis (isTrusted).', minRowMs: 1000, minMouse: 3,
+      flags: { extra: true, shuffle: true, dynId: true, shadow: true, delay: true, honeypot: true, customEls: true, canvasOcr: true, svgSubmit: true, antiBot: true },
+      howto: ['Tudo do nível 10, mais proteção anti-bot comportamental.', 'Gaste pelo menos 1 segundo por linha (adicione esperas realistas).', 'Gere movimentos reais de mouse antes de enviar (mouse.move / ActionChains).', 'Use cliques reais do driver: element.click() disparado via JavaScript gera isTrusted=false e é bloqueado.', 'Se for bloqueado, clique em Tentar Novamente.'] },
+    { id: 12, tier: 'insane', name: 'Level 12: Excel Roundtrip', desc: 'Dados só em planilha .xlsx suja: abas falsas, cabeçalho deslocado, espaços, linhas canceladas.',
+      mode: 'queue', total: 7, anomalies: { cancel: 2 },
+      rules: ['Os dados existem SOMENTE na planilha (nada é exibido na tela).', 'Nem toda aba é a certa e o cabeçalho não está na primeira linha.', 'Só cadastre registros com Status ATIVO.', 'Ordem livre; clique em Finalizar ao terminar.'],
+      howto: ['Clique em “Baixar planilha (Excel)” e abra o .xlsx (openpyxl / pandas).', 'Ignore a aba LEIAME e leia a aba Dados a partir da linha 3 (header=2 no pandas).', 'Aplique strip() em todos os textos (há espaços sobrando e e-mails em maiúsculas).', 'Filtre Status = ATIVO ignorando maiúsculas/minúsculas e espaços.', 'Para cada registro válido, preencha o formulário e envie. Ao terminar todos, clique em Finalizar.'],
+      flags: { extra: true, dynId: true, excel: true } },
+    { id: 13, tier: 'insane', name: 'Level 13: Session Expired', desc: 'Login com CSRF, sessão que expira no meio do trabalho, planilha com duplicados.',
+      mode: 'queue', total: 8, anomalies: { cancel: 2, dup: 1 }, session: { ttl: 45 },
+      rules: ['É preciso fazer login (credenciais no briefing). A sessão expira e o que estava digitado se perde.', 'Após expirar, download e envio ficam bloqueados até novo login.', 'E-mail repetido: cadastre apenas a primeira ocorrência.'],
+      howto: ['Faça login com rpa.bot / S3nh@Forte!. Leia o token CSRF oculto (input hidden) a cada tentativa: ele muda.', 'Baixe a planilha e trate como no nível 12.', 'A sessão dura 45 s (veja o contador). Quando a tela de login reaparecer, entre de novo: o registro atual recomeça do zero.', 'Detecte expiração aguardando o formulário de login ou o banner de sessão expirada e refaça o login automaticamente.', 'E-mails repetidos: só a primeira ocorrência vale.'],
+      flags: { extra: true, dynId: true, shuffle: true, excel: true, session: true } },
+    { id: 14, tier: 'insane', name: 'Level 14: Wizard & Validation', desc: 'Wizard de 3 etapas, validações (CPF, valor, data), pop-ups aleatórios e sessão curta.',
+      mode: 'queue', total: 11, anomalies: { cancel: 2, dup: 2, cpf: 2 }, session: { ttl: 40 },
+      rules: ['Formulário em 3 etapas, com validação de CPF, valor (1.234,56) e data (dd/mm/aaaa).', 'A planilha guarda CPF só com dígitos, valor numérico e data ISO: converta.', 'Registros com CPF inválido não devem ser cadastrados (use Limpar se já começou).', 'Pop-ups aleatórios bloqueiam a tela; um deles apaga o formulário.'],
+      howto: ['Use o Excel como no nível 13 (login, CSRF, sessão de 40 s).', 'Converta formatos: CPF 12345678909 → 123.456.789-09; Valor 1234.5 → 1.234,50; Data 2025-03-14 → 14/03/2025.', 'Valide o CPF pelos dígitos verificadores: inválido = não cadastrar.', 'Preencha cada etapa e clique em Próximo →; na última, Enviar Registro.', 'Feche pop-ups antes de clicar. “Atualizar agora” apaga o formulário: prefira “Mais tarde”.'],
+      flags: { extra: true, fin: true, dynId: true, shuffle: true, shadow: true, delay: true, interrupts: true, wizard: true, validate: true, excel: true, session: true } },
+    { id: 15, tier: 'insane', name: 'Level 15: Zero Day', desc: '2FA, sessão curta, anti-bot, shadow DOM em iframe, wizard, várias abas e relatório de conciliação.',
+      mode: 'queue', total: 14, anomalies: { cancel: 3, dup: 2, cpf: 3 }, session: { ttl: 35 }, minRowMs: 2500, minMouse: 5,
+      rules: ['Login com 2FA: o código aparece por poucos segundos e vale 30 s.', 'Dados divididos nas abas “Dados_*” (ignore as de resumo). O nome do arquivo muda a cada download.', 'Formulário dentro de iframe + Shadow DOM, campos customizados e botão SVG.', 'Anti-bot ativo.', 'Ao final, envie um relatório .xlsx (Fatura, Status, Motivo) com TODAS as linhas da planilha.'],
+      howto: ['Tudo do nível 14, mais: após usuário/senha, leia o código 2FA no toast (some em 8 s) e digite-o.', 'Concatene as abas Dados_A e Dados_B (ignore LEIAME e Resumo).', 'O formulário está num iframe e, dentro dele, num Shadow DOM; os campos de texto são contenteditable e o envio é um SVG.', 'Anti-bot: mouse real, cliques confiáveis e pelo menos 2,5 s por registro.', 'Ao final, gere um .xlsx com colunas Fatura, Status (PROCESSADO/IGNORADO) e Motivo (CANCELADO/DUPLICADO/CPF_INVALIDO) para TODAS as linhas e envie na tela de upload.'],
+      flags: { extra: true, fin: true, dynId: true, shuffle: true, shadow: true, iframe: true, customEls: true, svgSubmit: true, delay: true, honeypot: true, interrupts: true, wizard: true, validate: true, excel: true, twoSheets: true, session: true, twofa: true, antiBot: true, upload: true } },
+
+    { id: 16, tier: 'lab', name: 'Level 16: Component Zoo', desc: 'Muitos componentes: checklist, dropdowns com radio/checkbox, autocomplete, slider, toggle, estrelas, data, cor...',
+      howto: ['Baixe o CSV: as colunas têm o nome dos campos. Os campos estão separados em ABAS: clique em cada aba para preencher.',
+              'Skills (lista de checkboxes): marque exatamente os itens do CSV (separados por vírgula).',
+              'Languages (seleção múltipla): selecione vários itens (Ctrl/Cmd + clique; select_options com lista no Playwright).',
+              'Interests (dropdown com checkboxes): abra o dropdown e marque os itens. Plan (dropdown com radio): abra e escolha uma opção.',
+              'Country (autocomplete): digite parte do nome e clique na sugestão.',
+              'Experience (slider): ajuste para o valor exato (setas do teclado ou fill). Remote (toggle): Yes = ligado. Rating: clique na estrela N.',
+              'Start Date (calendário), Meeting Time (hora) e Brand Color (cor): inputs nativos, preencha no formato do CSV. Notes: textarea.',
+              'Quantity: clique em − ou + até o número do CSV. Billing: botões segmentados.',
+              'Envie com Submit Record e repita para as 5 linhas.'],
+      flags: { extra: true, dynId: true, shuffle: true, tabs: true, comps: 'AB' } },
+    { id: 17, tier: 'lab', name: 'Level 17: Drag Race', desc: 'Arrastar e soltar, lista ordenável, PIN em caixas, tags e componentes em Shadow DOM.',
+      howto: ['Tudo do nível 16, mais os componentes da aba “Avançado”.',
+              'PIN: 4 caixas separadas com avanço automático: um dígito por caixa.',
+              'Labels (tags): digite uma tag e pressione Enter; repita para cada tag do CSV.',
+              'Priority (arrastar e soltar): arraste as tarefas indicadas da lista “Disponíveis” para a caixa verde, na ordem do CSV (Deploy>Backup>Review = Deploy primeiro). Use mouse down → move → up reais (drag_to, mouse.down/move/up ou ActionChains).',
+              'Ranking (lista ordenável): arraste os itens para reordenar até a ordem do CSV (1º no topo).',
+              'Os campos estão em Shadow DOM com IDs aleatórios.'],
+      flags: { extra: true, dynId: true, shuffle: true, shadow: true, tabs: true, comps: 'ABC' } },
+    { id: 18, tier: 'lab', name: 'Level 18: Table Harvest', desc: 'Coleta de tabela (web scraping): dados em tabela paginada, ordenável e filtrável, formulário em acordeão.',
+      mode: 'queue', total: 9, anomalies: { cancel: 2, dup: 1 },
+      rules: ['Não há planilha: os dados estão na tabela “Clientes” da própria tela.', 'Só cadastre Status ATIVO; e-mail repetido: apenas a primeira ocorrência.', 'Clique em Finalizar ao terminar.'],
+      howto: ['Faça web scraping da tabela “Clientes”: percorra TODAS as páginas com o botão Próxima (só as linhas da página atual existem no DOM).', 'A ordem das colunas pode variar: mapeie pelo texto do cabeçalho (ex.: Nome → First Name, Fatura → Invoice). Ignore a coluna ID.', 'Cadastre apenas linhas com Status ATIVO (ignore espaços e maiúsculas) e só a primeira ocorrência de cada e-mail.', 'O formulário é um acordeão: clique no título da seção para abri-la antes de preencher.', 'Use as dicas do nível 16 para os componentes. Ao enviar todos, clique em Finalizar.'],
+      flags: { extra: true, dynId: true, shuffle: true, accordion: true, table: true, comps: 'AB' } },
+    { id: 19, tier: 'lab', name: 'Level 19: Interaction Gauntlet', desc: 'Tabela + hover, botão direito, duplo clique e rolagem infinita, wizard, sessão curta e pop-ups.',
+      mode: 'queue', total: 10, anomalies: { cancel: 2, dup: 1 }, session: { ttl: 60 },
+      rules: ['Dados cadastrais na tabela; códigos extras só nos widgets da etapa “Extração”.', 'Login com sessão de 60 s, pop-ups aleatórios e loader entre etapas.'],
+      howto: ['Colete os dados na tabela (como no nível 18) e cadastre só ATIVO e sem e-mail repetido.',
+              'Na etapa “Extração” há 4 widgets; cada um lista as faturas e esconde um código por fatura:',
+              'Hover: passe o mouse sobre o ⓘ da fatura e leia o tooltip “Código: H-xxxx”.',
+              'Botão direito: clique com o botão direito na fatura e leia “Código: C-xxxx” no menu de contexto.',
+              'Duplo clique: dê duplo clique na linha da fatura para revelar “Código: D-xxxx”.',
+              'Rolagem infinita: role a caixa até o fim; faturas novas carregam aos poucos até a sua aparecer (código S-xxxx).',
+              'Digite apenas o código (ex.: H-1234) no campo correspondente. Navegue com Próximo/Voltar e refaça o login se a sessão expirar.'],
+      flags: { extra: true, dynId: true, shuffle: true, shadow: true, delay: true, interrupts: true, wizard: true, validate: true, table: true, session: true, comps: 'ABCW' } },
+    { id: 20, tier: 'lab', name: 'Level 20: OMEGA', desc: 'Cruzamento Excel + tabela, 2FA, anti-bot, iframe + shadow, drag and drop, widgets e relatório final.',
+      mode: 'queue', total: 12, anomalies: { cancel: 2, dup: 2, cpf: 2 }, session: { ttl: 60 }, minRowMs: 4000, minMouse: 8,
+      rules: ['A tabela traz dados cadastrais e componentes; o Excel traz Fatura, CPF, Valor, Data e Status (abas Dados_A e Dados_B).', 'Una as duas fontes pela Fatura.', 'Login + 2FA, validações, pop-ups, anti-bot e relatório final Fatura/Status/Motivo.'],
+      howto: ['Cruze as fontes: a tabela (scraping de todas as páginas) tem nome, e-mail, empresa, cargo, skills, plano etc.; o Excel (aba Dados_A + Dados_B) tem Fatura, CPF, Valor, Data e Status. Una pela Fatura.',
+              'Faça login + 2FA (código no toast por 8 s). A sessão dura 60 s: relogue quando expirar.',
+              'Valide e converta: CPF com dígitos verificadores e máscara, Valor 1.234,56, Data dd/mm/aaaa. Status ≠ ATIVO, e-mail repetido e CPF inválido = não cadastrar.',
+              'Preencha todas as etapas do wizard: campos básicos, listas, dropdowns, slider, toggle, estrelas, data, hora, cor, textarea, stepper, PIN, tags, drag and drop, ranking e os 4 códigos (hover, botão direito, duplo clique, rolagem).',
+              'O formulário está em iframe + Shadow DOM, com campos de texto contenteditable e envio por botão SVG.',
+              'Anti-bot: mouse real, cliques confiáveis e pelo menos 4 s por registro.',
+              'Ao final, envie o relatório .xlsx (Fatura, Status, Motivo) com TODAS as linhas do Excel.'],
+      flags: { extra: true, fin: true, dynId: true, shuffle: true, shadow: true, iframe: true, customEls: true, svgSubmit: true, delay: true, honeypot: true, interrupts: true, wizard: true, validate: true, excel: true, split: true, twoSheets: true, table: true, session: true, twofa: true, antiBot: true, upload: true, comps: 'ABCW' } }
+];
+
+/* =====================================================================
+   ESTADO, RNG E UTILIDADES
+   ===================================================================== */
+function freshState(level) {
+    return {
+        level, row: 0, step: 1, dataset: [], results: [], startTime: null, timerInt: null, sessionInt: null, intTimer: null,
+        idMap: {}, renderedKeys: [], isSubmitting: false, rootNode: null, iframeRef: null, mouseMoves: 0, rowStartTime: 0,
+        draft: {}, hp: false, phase: 'idle', view: 'form', session: { active: false, expiresAt: 0 }, csrf: '', code: '', codeExp: 0, codeFails: 0,
+        sent: 0, unwanted: [], validationErrors: 0, expirations: 0, downloads: 0, interrupts: 0, loginFails: 0,
+        recordActive: false, reportEval: null, renderToken: 0, log: [], tbl: null, tblCols: null
+    };
+}
+let state = freshState(1);
+let rng = Math.random;
+
+function mulberry32(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function hashStr(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function setSeed() { const s = $('opt-seed').value.trim(); rng = s ? mulberry32(hashStr(s)) : Math.random; }
+function pick(a) { return a[Math.floor(rng() * a.length)]; }
+function shuffle(a, r) { r = r || Math.random; const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
+function subset(arr, min, max) { const n = min + Math.floor(rng() * (max - min + 1)); const idx = shuffle(arr.map((_, i) => i), rng).slice(0, n).sort((a, b) => a - b); return idx.map(i => arr[i]).join(','); }
+const pad2 = n => String(n).padStart(2, '0');
+function genId() { return 'id_' + Math.random().toString(36).substr(2, 9); }
+function stripAcc(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').trim().toUpperCase(); }
+const norm = s => String(s == null ? '' : s).trim().toLowerCase();
+const curLevel = () => LEVELS.find(l => l.id === state.level);
+function log(type, data) { state.log.push(Object.assign({ t: Date.now(), type }, data || {})); }
+function show(id) { $(id).classList.remove('hidden'); }
+function hide(id) { $(id).classList.add('hidden'); }
+function hideAllScreens() { ['screen-start', 'screen-loading', 'screen-login', 'screen-form', 'screen-upload', 'screen-blocked', 'screen-results'].forEach(hide); }
+function fmtMs(ms) { const e = new Date(ms); return `${pad2(e.getUTCMinutes())}:${pad2(e.getUTCSeconds())}.${String(e.getUTCMilliseconds()).padStart(3, '0')}`; }
+function mk(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+window.addEventListener('mousemove', () => { state.mouseMoves++; });
+
+function showToast(text, ms, id) {
+    const t = mk('div', 'toast'); t.textContent = text; if (id) t.id = id;
+    $('toast-root').appendChild(t); setTimeout(() => t.remove(), ms || 4000);
+}
+
+function downloadLog() {
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(state.log, null, 2)], { type: 'application/json' }));
+    a.download = `rpa_challenger_log_L${state.level}.json`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* =====================================================================
+   GERAÇÃO DE DADOS
+   ===================================================================== */
+function genExtras() {
+    const code = p => `${p}-${1000 + Math.floor(rng() * 9000)}`;
+    return {
+        Skills: subset(OPT.Skills, 2, 4), Languages: subset(OPT.Languages, 1, 3), Interests: subset(OPT.Interests, 1, 3),
+        Plan: pick(OPT.Plan), Country: pick(OPT.Countries),
+        Experience: String(1 + Math.floor(rng() * 19)), Remote: rng() > .5 ? 'Yes' : 'No', Rating: String(1 + Math.floor(rng() * 5)),
+        StartDate: `2026-${pad2(1 + Math.floor(rng() * 12))}-${pad2(1 + Math.floor(rng() * 28))}`,
+        Time: `${pad2(8 + Math.floor(rng() * 10))}:${pick(['00', '15', '30', '45'])}`,
+        Color: pick(OPT.Colors), Notes: pick(OPT.Notes), Quantity: String(1 + Math.floor(rng() * 9)), Billing: pick(OPT.Billing),
+        PIN: String(Math.floor(rng() * 10000)).padStart(4, '0'), Labels: subset(OPT.Tags, 1, 3),
+        Priority: shuffle(OPT.Tasks, rng).slice(0, 3).join('>'), Ranking: shuffle(OPT.Ranks, rng).join('>'),
+        HoverCode: code('H'), CtxCode: code('C'), DblCode: code('D'), ScrollCode: code('S')
+    };
+}
+
+function genSeq() {
+    const out = [];
+    for (let i = 0; i < 5; i++) {
+        const f = pick(MOCK.fnames), l = pick(MOCK.lnames);
+        out.push(Object.assign({
+            FirstName: f, LastName: l, Email: `${f.toLowerCase()}.${l.toLowerCase()}@test.com`,
+            Phone: `+1555${Math.floor(1000000 + rng() * 9000000)}`, Company: pick(MOCK.companies), Role: pick(MOCK.roles),
+            SkillRPA: rng() > .5 ? 'Yes' : 'No', SkillJS: rng() > .5 ? 'Yes' : 'No', Department: pick(MOCK.deps),
+            InvoiceNumber: `INV-${Math.floor(10000 + rng() * 89999)}`, valid: true
+        }, genExtras()));
+    }
+    return out;
+}
+
+function cpfDigits(base) {
+    const d = base.slice();
+    for (let t = 9; t <= 10; t++) { let sum = 0; for (let i = 0; i < t; i++) sum += d[i] * (t + 1 - i); d.push(((sum * 10) % 11) % 10); }
+    return d;
+}
+function genCpf(valid) {
+    let base; do { base = Array.from({ length: 9 }, () => Math.floor(rng() * 10)); } while (base.every(x => x === base[0]));
+    const d = cpfDigits(base);
+    if (!valid) d[10] = (d[10] + 1 + Math.floor(rng() * 8)) % 10;
+    return d.join('');
+}
+const fmtCpf = s => `${s.slice(0, 3)}.${s.slice(3, 6)}.${s.slice(6, 9)}-${s.slice(9)}`;
+function cpfValid(s) {
+    if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(s)) return false;
+    const d = s.replace(/\D/g, '').split('').map(Number);
+    if (d.every(x => x === d[0])) return false;
+    const c = cpfDigits(d.slice(0, 9));
+    return c[9] === d[9] && c[10] === d[10];
+}
+
+function genQueue(L) {
+    const n = L.total, A = L.anomalies || {};
+    const roles = new Array(n).fill('OK'), dupOf = {};
+    const idx = shuffle([...Array(n).keys()], rng); let p = 0;
+    for (let i = 0; i < (A.cancel || 0); i++) roles[idx[p++]] = 'CANCELADO';
+    for (let i = 0; i < (A.cpf || 0); i++) roles[idx[p++]] = 'CPF_INVALIDO';
+    const cands = shuffle([...Array(n).keys()].filter(i => i >= 1 && roles[i] === 'OK'), rng);
+    let made = 0;
+    for (const j of cands) {
+        if (made >= (A.dup || 0)) break;
+        const src = [...Array(j).keys()].filter(i => roles[i] === 'OK');
+        if (!src.length) continue;
+        roles[j] = 'DUPLICADO'; dupOf[j] = pick(src); made++;
+    }
+    const rows = [];
+    for (let i = 0; i < n; i++) {
+        let fn = pick(MOCK.fnames), ln = pick(MOCK.lnames), email = `${fn}.${ln}${i + 1}@example.com`.toLowerCase();
+        if (roles[i] === 'DUPLICADO') { const s = rows[dupOf[i]]; fn = s.FirstName; ln = s.LastName; email = s.Email; }
+        const company = pick(MOCK.companies), role = pick(MOCK.roles), dept = pick(MOCK.deps);
+        const rpa = rng() > .5 ? 'Yes' : 'No', js = rng() > .5 ? 'Yes' : 'No';
+        const phone = `+55419${Math.floor(10000000 + rng() * 89999999)}`;
+        const invoice = `INV-${20000 + i * 97 + Math.floor(rng() * 90)}`;
+        const cpfRaw = genCpf(roles[i] !== 'CPF_INVALIDO');
+        const v = Math.round((100 + rng() * 9900) * 100) / 100;
+        const y = pick([2024, 2025]), m = 1 + Math.floor(rng() * 12), d = 1 + Math.floor(rng() * 28);
+        const iso = `${y}-${pad2(m)}-${pad2(d)}`;
+        const padS = s => rng() < .3 ? `  ${s} ` : s;
+        const status = roles[i] === 'CANCELADO' ? (rng() < .5 ? 'CANCELADO' : 'cancelado') : (rng() < .3 ? 'Ativo ' : 'ATIVO');
+        rows.push(Object.assign({
+            FirstName: fn, LastName: ln, Email: email, Phone: phone, Company: company, Role: role, SkillRPA: rpa, SkillJS: js, Department: dept,
+            InvoiceNumber: invoice, CPF: fmtCpf(cpfRaw),
+            Amount: v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+            Date: `${pad2(d)}/${pad2(m)}/${y}`,
+            valid: roles[i] === 'OK', reason: roles[i] === 'OK' ? '' : roles[i], processed: false, fieldsOk: 0,
+            raw: {
+                Nome: padS(fn), Sobrenome: padS(ln), Email: rng() < .2 ? email.toUpperCase() : padS(email), Telefone: phone, Empresa: padS(company),
+                Cargo: role, RPA: rpa === 'Yes' ? 'Sim' : 'Não', JavaScript: js === 'Yes' ? 'Sim' : 'Não', Departamento: dept,
+                Fatura: invoice, CPF: cpfRaw, Valor: v, Data: iso, Status: status
+            }
+        }, genExtras()));
+    }
+    return rows;
+}
+function generateDataset(L) { return L.mode === 'queue' ? genQueue(L) : genSeq(); }
+
+/* =====================================================================
+   NAVEGAÇÃO / INÍCIO / FIM
+   ===================================================================== */
+function initApp() {
+    const nav = $('level-selector'); nav.innerHTML = ''; let lastTier = '';
+    LEVELS.forEach(l => {
+        if (l.tier !== lastTier) { lastTier = l.tier; nav.appendChild(mk('div', `tier ${TIERS[l.tier].cls}`, TIERS[l.tier].label)); }
+        const btn = mk('button', 'lvl' + (state.level === l.id ? ' active' : ''), `<i>${pad2(l.id)}</i>${l.name.split(':')[1].trim()}`);
+        btn.addEventListener('click', () => selectLevel(l.id));
+        nav.appendChild(btn);
+    });
+}
+
+function stopAll() {
+    clearInterval(state.timerInt); clearInterval(state.sessionInt); clearTimeout(state.intTimer);
+    state.renderToken++; $('overlay-root').innerHTML = '';
+}
+
+function selectLevel(id) {
+    stopAll(); setSeed();
+    state = freshState(id);
+    const L = curLevel();
+    state.dataset = generateDataset(L);
+    initApp();
+    $('level-title').innerText = L.name; $('level-desc').innerText = L.desc;
+    hideAllScreens(); ['ui-timer', 'ui-progress', 'ui-session', 'table-card', 'toolbar'].forEach(hide);
+    show('screen-start'); hide('data-status');
+    $('timer-val').innerText = '00:00.000';
+    const queue = L.mode === 'queue';
+    let src = 'o CSV';
+    if (queue) src = L.flags.table && L.flags.excel ? 'a tabela da tela e a planilha Excel' : L.flags.table ? 'a tabela da tela' : 'a planilha Excel';
+    $('brief-text').innerText = queue
+        ? `Os registros devem ser cadastrados no formulário a partir dos dados de ${src}. Ordem livre; clique em Finalizar quando terminar.`
+        : 'Baixe o dataset (CSV), clique em Start e preencha as 5 linhas com precisão e rapidez. A mecânica do formulário muda conforme o nível.';
+    const ol = $('howto-list'); ol.innerHTML = '';
+    L.howto.forEach(t => { const li = document.createElement('li'); li.textContent = t; ol.appendChild(li); });
+    const ul = $('brief-rules'); ul.innerHTML = '';
+    if (L.rules) { L.rules.forEach(r => { const li = document.createElement('li'); li.textContent = r; ul.appendChild(li); }); show('brief-rules-wrap'); } else hide('brief-rules-wrap');
+    if (L.flags.session) show('brief-creds'); else hide('brief-creds');
+    if (queue) hide('btn-csv'); else show('btn-csv');
+    log('level_selected', { level: id, seed: $('opt-seed').value });
+}
+function resetApp() { selectLevel(state.level); }
+
+const csvQ = s => /[",\n;]/.test(s) ? `"${String(s).replace(/"/g, '""')}"` : String(s);
+function downloadDataset() {
+    show('data-status');
+    const keys = activeFields(curLevel().flags).filter(k => !GW.includes(k));
+    const csv = keys.join(',') + '\n' + state.dataset.map(r => keys.map(k => csvQ(r[k])).join(',')).join('\n');
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    a.download = `challenge_L${state.level}.csv`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+function setProgress() {
+    const L = curLevel();
+    if (L.mode === 'queue') { $('progress-label').innerText = 'Enviados'; $('progress-text').innerText = String(state.sent); $('sent-count').innerText = `Registros enviados: ${state.sent}`; }
+    else { $('progress-label').innerText = 'Progress'; $('progress-text').innerText = `${state.row + 1} / 5`; }
+}
+
+function startChallenge() {
+    const L = curLevel();
+    hide('screen-start'); show('ui-timer'); show('ui-progress');
+    state.row = 0; state.results = []; state.sent = 0; state.mouseMoves = 0;
+    state.startTime = Date.now();
+    state.timerInt = setInterval(() => { $('timer-val').innerText = fmtMs(Date.now() - state.startTime); }, 43);
+    log('start');
+    if (L.flags.session) {
+        show('ui-session'); $('session-val').innerText = '--:--';
+        state.sessionInt = setInterval(sessionTick, 250);
+        showLogin('');
+    } else { state.phase = 'work'; newRecord(); }
+}
+
+function blockUser(reason) {
+    stopAll(); state.phase = 'blocked';
+    hideAllScreens(); ['ui-timer', 'ui-progress', 'ui-session'].forEach(hide);
+    $('block-reason').innerText = reason; show('screen-blocked'); log('blocked', { reason });
+}
+
+/* =====================================================================
+   SESSÃO, LOGIN E 2FA
+   ===================================================================== */
+function rotateCsrf() { state.csrf = 'csrf_' + Math.random().toString(36).substr(2, 12); $('login-csrf').value = state.csrf; }
+function loginError(msg) { const e = $('login-error'); e.innerText = msg; show('login-error'); }
+
+function showLogin(banner) {
+    state.phase = 'login'; clearTimeout(state.intTimer); $('overlay-root').innerHTML = '';
+    hideAllScreens(); show('screen-login');
+    const b = $('login-banner'); if (banner) { b.innerText = banner; show('login-banner'); } else hide('login-banner');
+    hide('login-error');
+    $('login-user').value = ''; $('login-pass').value = ''; $('twofa-code').value = '';
+    show('login-form'); hide('twofa-form'); rotateCsrf(); state.codeFails = 0;
+    $('session-val').innerText = '--:--';
+}
+
+window.doLogin = function (e) {
+    e.preventDefault();
+    if ($('login-csrf').value !== state.csrf) { loginError('Token CSRF inválido ou expirado.'); rotateCsrf(); log('login_csrf_fail'); return false; }
+    if ($('login-user').value.trim() !== LOGIN.user || $('login-pass').value !== LOGIN.pass) {
+        state.loginFails++; loginError('Usuário ou senha inválidos.'); rotateCsrf(); $('login-pass').value = ''; log('login_fail'); return false;
+    }
+    hide('login-error');
+    if (curLevel().flags.twofa) { hide('login-form'); show('twofa-form'); send2FA(); } else completeLogin();
+    return false;
+};
+
+window.send2FA = function () {
+    state.code = String(Math.floor(100000 + Math.random() * 900000)); state.codeExp = Date.now() + 30000;
+    document.querySelectorAll('#toast-2fa').forEach(t => t.remove());
+    showToast(`📧 Código de verificação: ${state.code} (válido por 30s)`, 8000, 'toast-2fa');
+    log('2fa_sent');
+};
+
+window.do2FA = function (e) {
+    e.preventDefault();
+    if (Date.now() > state.codeExp) { loginError('Código expirado. Solicite um novo.'); return false; }
+    if ($('twofa-code').value.trim() !== state.code) {
+        state.codeFails++; log('2fa_fail');
+        if (state.codeFails >= 3) { showLogin('Muitas tentativas de 2FA. Refaça o login.'); return false; }
+        loginError(`Código incorreto (${state.codeFails}/3).`); return false;
+    }
+    document.querySelectorAll('#toast-2fa').forEach(t => t.remove());
+    completeLogin(); return false;
+};
+
+function completeLogin() {
+    const ttl = curLevel().session.ttl;
+    state.session = { active: true, expiresAt: Date.now() + ttl * 1000 };
+    log('login_ok', { ttl });
+    hide('screen-login'); state.phase = 'work';
+    if (state.view === 'upload') { show('screen-upload'); return; }
+    if (!state.recordActive) newRecord(); else renderForm();
+}
+
+function sessionTick() {
+    if (!state.session.active) return;
+    const left = state.session.expiresAt - Date.now(), s = Math.max(0, Math.ceil(left / 1000));
+    const el = $('session-val'); el.innerText = `${pad2(Math.floor(s / 60))}:${pad2(s % 60)}`;
+    el.className = 'v ' + (s <= 10 ? 'warn' : 'ok');
+    if (left <= 0) expireSession('Sua sessão expirou por tempo limite. Faça login novamente.');
+}
+
+function expireSession(msg) {
+    if (state.phase !== 'work') return;
+    state.session.active = false; state.expirations++; state.draft = {}; state.step = 1; state.tbl = null;
+    $('form-host').innerHTML = ''; hide('table-card'); log('session_expired');
+    showLogin(msg || 'Sessão expirada.');
+}
+
+function ensureSession() {
+    if (curLevel().flags.session && !state.session.active) { expireSession('Sessão expirada. Faça login novamente.'); return false; }
+    return true;
+}
+
+/* =====================================================================
+   INTERRUPÇÕES (POP-UPS ALEATÓRIOS)
+   ===================================================================== */
+function scheduleInterruption() {
+    clearTimeout(state.intTimer);
+    if (!curLevel().flags.interrupts || state.interrupts >= 8) return;
+    state.intTimer = setTimeout(showInterruption, 5000 + Math.random() * 7000);
+}
+
+function showInterruption() {
+    if (state.phase !== 'work' || state.view !== 'form' || $('overlay-root').children.length) { scheduleInterruption(); return; }
+    const type = ['cookie', 'survey', 'update'][Math.floor(Math.random() * 3)];
+    const bd = mk('div', 'ov-backdrop'); bd.setAttribute('role', 'dialog');
+    const close = reset => { bd.remove(); state.interrupts++; log('interrupt_closed', { type, reset }); if (reset) { state.draft = {}; state.step = 1; renderForm(); } scheduleInterruption(); };
+    let html = '';
+    if (type === 'cookie') {
+        html = `<h4 style="margin-bottom:8px">🍪 Nós usamos cookies</h4><p style="font-size:14px;color:var(--black-3);margin:0 0 16px">Utilizamos cookies para melhorar sua experiência.</p>
+                <div style="display:flex;gap:8px;justify-content:flex-end"><button class="ov-btn" data-a="x">Rejeitar</button><button class="ov-btn primary" data-a="x">Aceitar todos</button></div>`;
+    } else if (type === 'survey') {
+        const corner = ['top:8px;left:8px', 'top:8px;right:8px', 'bottom:8px;left:8px', 'bottom:8px;right:8px'][Math.floor(Math.random() * 4)];
+        html = `<button class="ov-x" style="${corner}" data-a="x" aria-label="Fechar">✕</button><h4 style="margin-bottom:8px">Como está sua experiência?</h4>
+                <p style="font-size:14px;color:var(--black-3);margin:0 0 16px">Avalie de 1 a 5:</p><div style="display:flex;gap:8px;justify-content:center">${[1, 2, 3, 4, 5].map(n => `<button class="ov-btn" data-a="x">${n}</button>`).join('')}</div>`;
+    } else {
+        html = `<h4 style="margin-bottom:8px">Nova versão disponível</h4><p style="font-size:14px;color:var(--black-3);margin:0 0 16px">Atualizar agora recarrega a página e descarta o que não foi enviado.</p>
+                <div style="display:flex;gap:8px;justify-content:flex-end"><button class="ov-btn" data-a="x">Mais tarde</button><button class="ov-btn primary" data-a="r">Atualizar agora</button></div>`;
+    }
+    bd.innerHTML = `<div class="ov-modal">${html}</div>`;
+    bd.querySelectorAll('[data-a]').forEach(b => b.addEventListener('click', () => close(b.dataset.a === 'r')));
+    $('overlay-root').appendChild(bd); log('interrupt_shown', { type });
+}
+
+/* =====================================================================
+   TABELA DE DADOS (COLETA / SCRAPING)
+   ===================================================================== */
+function tableCols(f) {
+    if (state.tblCols) return state.tblCols;
+    const keys = activeFields(f).filter(k => !GW.includes(k) && !(f.split && FIN.includes(k)));
+    let cols = keys.map(k => ({ k, h: FDEF[k].col || k }));
+    if (!f.split) cols.push({ k: '__status', h: 'Status' });
+    if (f.shuffle) cols = shuffle(cols);
+    cols.unshift({ k: '__id', h: 'ID' }); cols.push({ k: '__int', h: 'Interno', hidden: true });
+    state.tblCols = cols; return cols;
+}
+
+function ensureTable() {
+    const f = curLevel().flags;
+    if (!f.table) { hide('table-card'); return; }
+    show('table-card');
+    if (!state.tbl) state.tbl = { page: 0, sort: null, dir: 1, filter: '' };
+    $('tbl-filter').value = state.tbl.filter;
+    drawTable();
+}
+
+function drawTable() {
+    const cols = tableCols(curLevel().flags), t = state.tbl;
+    let rows = state.dataset.map((r, i) => ({ r, i }));
+    const cell = (o, c) => c.k === '__id' ? String(o.i + 1) : c.k === '__status' ? o.r.raw.Status : c.k === '__int' ? 'x' + (o.i * 7919 % 1000) : o.r[c.k];
+    const q = norm(t.filter);
+    if (q) rows = rows.filter(o => cols.some(c => norm(cell(o, c)).includes(q)));
+    if (t.sort) { const c = cols.find(x => x.k === t.sort); rows.sort((a, b) => String(cell(a, c)).localeCompare(String(cell(b, c)), 'pt', { numeric: true }) * t.dir); }
+    const pages = Math.max(1, Math.ceil(rows.length / PAGE));
+    t.page = Math.min(t.page, pages - 1);
+    const view = rows.slice(t.page * PAGE, t.page * PAGE + PAGE);
+    $('data-table').innerHTML =
+        `<thead><tr>${cols.map(c => `<th data-col="${c.k}" class="${c.hidden ? 'col-hide' : ''}">${c.h}${t.sort === c.k ? (t.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead>` +
+        `<tbody>${view.map(o => `<tr data-row="${o.i}">${cols.map(c => `<td class="${c.hidden ? 'col-hide' : ''}">${cell(o, c)}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    $('tbl-page').innerText = `Página ${t.page + 1} de ${pages}`;
+    $('tbl-prev').disabled = t.page === 0; $('tbl-next').disabled = t.page >= pages - 1;
+}
+
+/* =====================================================================
+   COMPONENTES DO FORMULÁRIO
+   ===================================================================== */
+function enableDrag(c, itemSel, onDrop) {
+    c.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        const item = e.target.closest(itemSel);
+        if (!item || !c.contains(item)) return;
+        e.preventDefault();
+        item.classList.add('dragging');
+        const doc = item.ownerDocument;
+        const up = ev => {
+            doc.removeEventListener('mouseup', up, true);
+            item.classList.remove('dragging');
+            const root = item.getRootNode();
+            const t = root && root.elementFromPoint ? root.elementFromPoint(ev.clientX, ev.clientY) : null;
+            onDrop(item, t, ev);
+        };
+        doc.addEventListener('mouseup', up, true);
+    });
+}
+
+function compCtl(key, id) {
+    const d = FDEF[key], opts = d.opts || [];
+    let c = mk('div', 'cmp'); c.id = id; c.setAttribute('data-kind', d.kind);
+    switch (d.kind) {
+        case 'checklist': {
+            c.classList.add('cmp-list');
+            c.innerHTML = opts.map(o => `<label class="cmp-row"><input type="checkbox" value="${o}"><span>${o}</span></label>`).join('');
+            const bx = () => [...c.querySelectorAll('input')];
+            c.__get = () => bx().filter(b => b.checked).map(b => b.value).join(',');
+            c.__set = v => { const s = v ? v.split(',') : []; bx().forEach(b => { b.checked = s.includes(b.value); }); };
+            break;
+        }
+        case 'multiselect': {
+            c = mk('select', 'input-base'); c.id = id; c.multiple = true; c.size = opts.length; c.setAttribute('data-kind', d.kind);
+            c.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+            c.__get = () => [...c.selectedOptions].map(x => x.value).join(',');
+            c.__set = v => { const s = v ? v.split(',') : []; [...c.options].forEach(o => { o.selected = s.includes(o.value); }); };
+            break;
+        }
+        case 'dropradio': {
+            c.classList.add('dd');
+            c.innerHTML = `<button type="button" class="dd-trigger">Selecione...</button><div class="dd-panel hidden">${opts.map(o => `<label class="cmp-row"><input type="radio" name="${id}_r" value="${o}"><span>${o}</span></label>`).join('')}</div>`;
+            const tr = c.querySelector('.dd-trigger'), pn = c.querySelector('.dd-panel');
+            tr.addEventListener('click', () => pn.classList.toggle('hidden'));
+            c.addEventListener('change', () => { const r = c.querySelector('input:checked'); tr.textContent = r ? r.value : 'Selecione...'; pn.classList.add('hidden'); });
+            c.__get = () => { const r = c.querySelector('input:checked'); return r ? r.value : ''; };
+            c.__set = v => { const r = c.querySelector(`input[value="${v}"]`); if (r) { r.checked = true; tr.textContent = v; } };
+            break;
+        }
+        case 'dropcheck': {
+            c.classList.add('dd');
+            c.innerHTML = `<button type="button" class="dd-trigger">Selecione...</button><div class="dd-panel hidden">${opts.map(o => `<label class="cmp-row"><input type="checkbox" value="${o}"><span>${o}</span></label>`).join('')}</div>`;
+            const tr = c.querySelector('.dd-trigger'), pn = c.querySelector('.dd-panel');
+            const bx = () => [...c.querySelectorAll('input')];
+            const label = () => { const n = bx().filter(b => b.checked).length; tr.textContent = n ? `${n} selecionado(s)` : 'Selecione...'; };
+            tr.addEventListener('click', () => pn.classList.toggle('hidden'));
+            c.addEventListener('change', label);
+            c.__get = () => bx().filter(b => b.checked).map(b => b.value).join(',');
+            c.__set = v => { const s = v ? v.split(',') : []; bx().forEach(b => { b.checked = s.includes(b.value); }); label(); };
+            break;
+        }
+        case 'combo': {
+            c.classList.add('combo');
+            c.innerHTML = `<input type="text" class="input-base" autocomplete="off" role="combobox" placeholder="Digite para buscar..."><ul class="combo-list hidden" role="listbox"></ul>`;
+            const inp = c.querySelector('input'), ul = c.querySelector('ul');
+            const match = t => opts.find(o => stripAcc(o) === stripAcc(t));
+            const refresh = () => { const t = stripAcc(inp.value); const m = opts.filter(o => t && stripAcc(o).includes(t)); ul.innerHTML = m.map(o => `<li role="option" data-v="${o}">${o}</li>`).join(''); ul.classList.toggle('hidden', !m.length); };
+            inp.addEventListener('input', refresh);
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const f = ul.querySelector('li'); if (f) inp.value = f.dataset.v; ul.classList.add('hidden'); } });
+            ul.addEventListener('click', e => { const li = e.target.closest('li'); if (li) { inp.value = li.dataset.v; ul.classList.add('hidden'); } });
+            c.__get = () => match(inp.value) || '';
+            c.__set = v => { inp.value = v || ''; };
+            break;
+        }
+        case 'slider': {
+            c.classList.add('slider');
+            c.innerHTML = `<input type="range" min="0" max="20" step="1" value="0"><output>0</output>`;
+            const r = c.querySelector('input'), o = c.querySelector('output');
+            r.addEventListener('input', () => { o.textContent = r.value; });
+            c.__get = () => r.value;
+            c.__set = v => { r.value = v; o.textContent = r.value; };
+            break;
+        }
+        case 'toggle': {
+            c.classList.add('switch-wrap');
+            c.innerHTML = `<button type="button" role="switch" aria-checked="false" class="switch"><span class="knob"></span></button><span class="switch-text">Desligado</span>`;
+            const b = c.querySelector('button'), t = c.querySelector('.switch-text');
+            const set = on => { b.setAttribute('aria-checked', on ? 'true' : 'false'); b.classList.toggle('on', on); t.textContent = on ? 'Ligado' : 'Desligado'; };
+            b.addEventListener('click', () => set(b.getAttribute('aria-checked') !== 'true'));
+            c.__get = () => b.getAttribute('aria-checked') === 'true' ? 'Yes' : 'No';
+            c.__set = v => set(v === 'Yes');
+            break;
+        }
+        case 'stars': {
+            c.classList.add('stars'); let val = '';
+            c.innerHTML = [1, 2, 3, 4, 5].map(n => `<button type="button" class="star" data-v="${n}" aria-label="${n} estrela${n > 1 ? 's' : ''}">★</button>`).join('');
+            const paint = () => c.querySelectorAll('.star').forEach(s => s.classList.toggle('on', !!val && +s.dataset.v <= +val));
+            c.addEventListener('click', e => { const s = e.target.closest('.star'); if (s) { val = s.dataset.v; paint(); } });
+            c.__get = () => val;
+            c.__set = v => { val = v || ''; paint(); };
+            break;
+        }
+        case 'date': case 'time': case 'color': {
+            c = mk('input', 'input-base'); c.id = id; c.type = d.kind; c.setAttribute('data-kind', d.kind);
+            if (d.kind === 'color') c.value = '#000000';
+            c.__get = () => d.kind === 'color' ? c.value.toLowerCase() : c.value;
+            c.__set = v => { if (v) c.value = v; };
+            break;
+        }
+        case 'textarea': {
+            c = mk('textarea', 'input-base'); c.id = id; c.rows = 2; c.setAttribute('data-kind', d.kind);
+            c.__get = () => c.value.trim();
+            c.__set = v => { c.value = v || ''; };
+            break;
+        }
+        case 'stepper': {
+            c.classList.add('stepper'); let n = 0;
+            c.innerHTML = `<button type="button" class="st-minus" aria-label="Diminuir">−</button><output>0</output><button type="button" class="st-plus" aria-label="Aumentar">+</button>`;
+            const o = c.querySelector('output');
+            const up = delta => { n = Math.max(0, Math.min(20, n + delta)); o.textContent = n; };
+            c.querySelector('.st-minus').addEventListener('click', () => up(-1));
+            c.querySelector('.st-plus').addEventListener('click', () => up(1));
+            c.__get = () => String(n);
+            c.__set = v => { n = +v || 0; o.textContent = n; };
+            break;
+        }
+        case 'segmented': {
+            c.classList.add('seg'); c.setAttribute('role', 'radiogroup'); let val = '';
+            c.innerHTML = opts.map(o => `<button type="button" class="seg-btn" role="radio" aria-checked="false" data-v="${o}">${o}</button>`).join('');
+            const paint = () => c.querySelectorAll('.seg-btn').forEach(b => { const on = b.dataset.v === val; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+            c.addEventListener('click', e => { const b = e.target.closest('.seg-btn'); if (b) { val = b.dataset.v; paint(); } });
+            c.__get = () => val;
+            c.__set = v => { val = v || ''; paint(); };
+            break;
+        }
+        case 'pin': {
+            c.classList.add('pin');
+            c.innerHTML = [0, 1, 2, 3].map(i => `<input type="text" inputmode="numeric" maxlength="1" class="pin-box" aria-label="Dígito ${i + 1}">`).join('');
+            const bx = [...c.querySelectorAll('input')];
+            bx.forEach((b, i) => {
+                b.addEventListener('input', () => { b.value = b.value.replace(/\D/g, ''); if (b.value && bx[i + 1]) bx[i + 1].focus(); });
+                b.addEventListener('keydown', e => { if (e.key === 'Backspace' && !b.value && bx[i - 1]) bx[i - 1].focus(); });
+            });
+            c.__get = () => bx.map(b => b.value).join('');
+            c.__set = v => bx.forEach((b, i) => { b.value = (v || '')[i] || ''; });
+            break;
+        }
+        case 'tags': {
+            c.classList.add('tags'); let tags = [];
+            c.innerHTML = `<div class="tag-chips"></div><input type="text" class="tag-input" placeholder="Digite e pressione Enter" autocomplete="off">`;
+            const chips = c.querySelector('.tag-chips'), inp = c.querySelector('input');
+            const draw = () => {
+                chips.innerHTML = '';
+                tags.forEach(t => {
+                    const s = mk('span', 'chip', `${t} <button type="button" class="chip-x" aria-label="Remover ${t}">×</button>`);
+                    s.querySelector('button').addEventListener('click', () => { tags = tags.filter(x => x !== t); draw(); });
+                    chips.appendChild(s);
+                });
+            };
+            const add = () => { const v = inp.value.trim().toLowerCase().replace(/,/g, ''); if (v && !tags.includes(v)) { tags.push(v); draw(); } inp.value = ''; };
+            inp.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); add(); } });
+            c.__get = () => tags.slice().sort().join(',');
+            c.__set = v => { tags = v ? v.split(',') : []; draw(); };
+            break;
+        }
+        case 'dragzone': {
+            c.classList.add('dnd');
+            c.innerHTML = `<div><div class="dnd-title">Disponíveis</div><div class="dnd-src" data-zone="src"></div></div><div><div class="dnd-title">Prioridade (1º → último)</div><div class="dnd-zone" data-zone="dst"></div></div>`;
+            const src = c.querySelector('.dnd-src'), dst = c.querySelector('.dnd-zone');
+            shuffle(opts).forEach(o => { const it = mk('div', 'dnd-item', o); it.dataset.v = o; src.appendChild(it); });
+            enableDrag(c, '.dnd-item', (item, target) => {
+                const zone = target && target.closest('[data-zone]');
+                if (!zone || !c.contains(zone)) return;
+                const over = target.closest('.dnd-item');
+                if (over === item) return;
+                if (over && zone.contains(over)) zone.insertBefore(item, over); else zone.appendChild(item);
+            });
+            c.__get = () => [...dst.querySelectorAll('.dnd-item')].map(x => x.dataset.v).join('>');
+            c.__set = v => {
+                [...c.querySelectorAll('.dnd-item')].forEach(it => src.appendChild(it));
+                (v ? v.split('>') : []).forEach(w => { const it = [...c.querySelectorAll('.dnd-item')].find(x => x.dataset.v === w); if (it) dst.appendChild(it); });
+            };
+            break;
+        }
+        case 'sortlist': {
+            c.classList.add('sortl');
+            c.innerHTML = `<div class="dnd-title">Lista (1º no topo)</div><ol class="sort-ol"></ol>`;
+            const ol = c.querySelector('ol');
+            shuffle(opts).forEach(o => { const li = mk('li', 'dnd-item sort-item', o); li.dataset.v = o; ol.appendChild(li); });
+            enableDrag(c, '.sort-item', (item, target, ev) => {
+                const over = target && target.closest('.sort-item');
+                if (!over || over === item || !ol.contains(over)) return;
+                const r = over.getBoundingClientRect();
+                if (ev.clientY < r.top + r.height / 2) ol.insertBefore(item, over); else ol.insertBefore(item, over.nextSibling);
+            });
+            c.__get = () => [...ol.children].map(x => x.dataset.v).join('>');
+            c.__set = v => { (v ? v.split('>') : []).forEach(w => { const li = [...ol.children].find(x => x.dataset.v === w); if (li) ol.appendChild(li); }); };
+            break;
+        }
+    }
+    return c;
+}
+
+/* Widgets que escondem um código por fatura (para os campos *Code) */
+function srcWidget(key) {
+    const rows = state.dataset.map(r => ({ inv: r.InvoiceNumber, code: r[key] }));
+    const box = mk('div', 'src-box');
+    if (key === 'HoverCode') {
+        box.innerHTML = `<div class="src-title">Passe o mouse sobre o ⓘ da fatura desejada</div>` +
+            rows.map(r => `<div class="src-row"><span class="src-inv">${r.inv}</span><span class="src-host" tabindex="0" aria-label="Detalhes ${r.inv}">ⓘ</span></div>`).join('');
+        box.querySelectorAll('.src-host').forEach((h, i) => {
+            const on = () => { if (!h.querySelector('.src-tip')) h.appendChild(mk('span', 'src-tip', 'Código: ' + rows[i].code)); };
+            const off = () => { const t = h.querySelector('.src-tip'); if (t) t.remove(); };
+            h.addEventListener('mouseenter', on); h.addEventListener('mouseleave', off); h.addEventListener('focus', on); h.addEventListener('blur', off);
+        });
+    } else if (key === 'CtxCode') {
+        box.innerHTML = `<div class="src-title">Clique com o botão direito na fatura desejada</div>` +
+            rows.map(r => `<div class="src-row ctx-row"><span class="src-inv">${r.inv}</span><span class="muted">botão direito</span></div>`).join('');
+        box.querySelectorAll('.ctx-row').forEach((row, i) => {
+            row.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                box.querySelectorAll('.ctx-menu').forEach(m => m.remove());
+                const m = mk('div', 'ctx-menu', `<div class="ctx-item">Copiar</div><div class="ctx-item">Detalhes</div><div class="ctx-item ctx-code">Código: ${rows[i].code}</div>`);
+                m.style.left = e.clientX + 'px'; m.style.top = e.clientY + 'px';
+                box.appendChild(m);
+                setTimeout(() => box.ownerDocument.addEventListener('click', () => m.remove(), { once: true }), 0);
+            });
+        });
+    } else if (key === 'DblCode') {
+        box.innerHTML = `<div class="src-title">Dê um duplo clique na fatura desejada</div>` +
+            rows.map(r => `<div class="src-row dbl-row"><span class="src-inv">${r.inv}</span><span class="dbl-out muted">duplo clique</span></div>`).join('');
+        box.querySelectorAll('.dbl-row').forEach((row, i) => {
+            row.addEventListener('dblclick', () => { const o = row.querySelector('.dbl-out'); o.textContent = 'Código: ' + rows[i].code; o.classList.remove('muted'); });
+        });
+    } else {
+        box.innerHTML = `<div class="src-title">Role a lista até o fim para carregar mais faturas</div><div class="scroll-box" tabindex="0"></div>`;
+        const sb = box.querySelector('.scroll-box'); let loaded = 0, busy = false;
+        const addRows = n => { rows.slice(loaded, loaded + n).forEach(r => sb.appendChild(mk('div', 'src-row', `<span class="src-inv">${r.inv}</span><span>Código: ${r.code}</span>`))); loaded = Math.min(rows.length, loaded + n); };
+        addRows(4);
+        sb.addEventListener('scroll', () => {
+            if (busy || loaded >= rows.length) return;
+            if (sb.scrollTop + sb.clientHeight >= sb.scrollHeight - 6) {
+                busy = true; const ld = mk('div', 'src-row muted', 'Carregando...'); sb.appendChild(ld);
+                setTimeout(() => { ld.remove(); addRows(3); busy = false; }, 600);
+            }
+        });
+    }
+    return box;
+}
+
+/* =====================================================================
+   CONSTRUÇÃO DO FORMULÁRIO
+   ===================================================================== */
+function newRecord() {
+    state.draft = {}; state.step = 1; state.hp = false; state.rowStartTime = Date.now(); state.mouseMoves = 0; state.recordActive = true; state.view = 'form';
+    setProgress(); scheduleInterruption();
+    renderForm();
+}
+
+function clearError() { hide('form-error'); }
+function showError(errs) {
+    const msgs = Object.keys(errs).map(k => `${FDEF[k].label}: ${errs[k]}`);
+    const e = $('form-error'); e.innerText = 'Erros de validação — ' + msgs.join(' | '); show('form-error');
+}
+
+function renderForm() {
+    const f = curLevel().flags; clearError();
+    const tok = ++state.renderToken;
+    if (f.delay) {
+        hide('screen-form'); show('screen-loading');
+        setTimeout(() => { if (tok !== state.renderToken || state.phase !== 'work') return; buildDOM(); }, 400 + Math.random() * 900);
+    } else buildDOM();
+}
+
+function mapId(key, flags, staticName) { const id = flags.dynId ? genId() : (staticName || key); state.idMap[key] = id; return id; }
+
+function textHtml(key, id, flags, label, hint) {
+    const d = FDEF[key], h = hint ? `<span class="hint">${hint}</span>` : '';
+    return flags.customEls
+        ? `<label class="label">${label}</label>${h}<div id="${id}" data-field="${key}" contenteditable="true" class="custom-input"></div>`
+        : `<label for="${id}" class="label">${label}</label>${h}<input type="${d.type || 'text'}" id="${id}" name="${id}" class="input-base" autocomplete="off">`;
+}
+
+function createFieldEl(key, flags) {
+    const d = FDEF[key], div = mk('div', d.wide ? 'fspan2' : '');
+    if (d.kind === 'text') {
+        div.innerHTML = textHtml(key, mapId(key, flags), flags, d.label);
+    } else if (d.kind === 'srctext') {
+        div.innerHTML = textHtml(key, mapId(key, flags), flags, d.label, 'Use o widget abaixo para descobrir o código da fatura');
+        div.insertBefore(srcWidget(key), div.querySelector('input,.custom-input'));
+    } else if (d.kind === 'radio') {
+        const grp = mapId(key, flags, 'RoleGroup');
+        if (flags.customEls) {
+            div.innerHTML = `<label class="label">${d.label}</label><div class="custom-radio-group" id="${grp}">${MOCK.roles.map(r => `<div class="custom-radio" data-val="${r}">${r}</div>`).join('')}</div>`;
+            div.querySelectorAll('.custom-radio').forEach(x => x.addEventListener('click', () => { div.querySelectorAll('.custom-radio').forEach(y => y.classList.remove('selected')); x.classList.add('selected'); }));
+        } else {
+            div.innerHTML = `<label class="label">${d.label}</label><div class="radio-group">${MOCK.roles.map((r, i) => `<label class="radio-label"><input type="radio" name="${grp}" id="${flags.dynId ? genId() : 'role_' + i}" value="${r}"> ${r}</label>`).join('')}</div>`;
+        }
+    } else if (d.kind === 'check') {
+        const id = mapId(key, flags);
+        if (flags.customEls) {
+            div.innerHTML = `<label class="label">Core Skills</label><div class="custom-check" id="${id}"><div class="custom-check-box"></div> ${d.label}</div>`;
+            div.querySelector('.custom-check').addEventListener('click', ev => ev.currentTarget.classList.toggle('selected'));
+        } else {
+            div.innerHTML = `<label class="label">Core Skills</label><label class="radio-label"><input type="checkbox" id="${id}" name="${id}"> ${d.label}</label>`;
+        }
+    } else if (d.kind === 'select') {
+        const id = mapId(key, flags);
+        if (flags.customEls) {
+            div.innerHTML = `<label class="label">${d.label}</label><div class="custom-select" id="${id}"><div class="select-trigger">Select Department...</div><div class="select-options">${MOCK.deps.map(x => `<div class="select-item" data-val="${x}">${x}</div>`).join('')}</div></div>`;
+            const tr = div.querySelector('.select-trigger'), op = div.querySelector('.select-options'), sel = div.querySelector('.custom-select');
+            tr.addEventListener('click', () => op.classList.toggle('open'));
+            div.querySelectorAll('.select-item').forEach(it => it.addEventListener('click', () => { tr.textContent = it.dataset.val; op.classList.remove('open'); sel.dataset.value = it.dataset.val; }));
+        } else {
+            div.innerHTML = `<label for="${id}" class="label">${d.label}</label><select id="${id}" name="${id}" class="input-base"><option value="">Select...</option>${MOCK.deps.map(x => `<option value="${x}">${x}</option>`).join('')}</select>`;
+        }
+    } else if (COMPKINDS.includes(d.kind)) {
+        const id = mapId(key, flags);
+        div.innerHTML = `<label class="label" for="${id}">${d.label}</label>${d.hint ? `<span class="hint">${d.hint}</span>` : ''}`;
+        div.appendChild(compCtl(key, id));
+    }
+    return div;
+}
+
+function readField(key) {
+    const d = FDEF[key], id = state.idMap[key], q = state.rootNode, f = curLevel().flags;
+    if (!id || !q) return null;
+    if (d.kind === 'radio') {
+        if (f.customEls) { const g = q.querySelector('#' + id), s = g && g.querySelector('.selected'); return s ? s.dataset.val : ''; }
+        const s = q.querySelector(`input[name="${id}"]:checked`); return s ? s.value : '';
+    }
+    const el = q.querySelector('#' + id); if (!el) return null;
+    if (COMPKINDS.includes(d.kind)) return el.__get ? el.__get() : null;
+    if (d.kind === 'check') return (f.customEls ? el.classList.contains('selected') : el.checked) ? 'Yes' : 'No';
+    if (d.kind === 'select') return f.customEls ? (el.dataset.value || '') : el.value;
+    return f.customEls ? el.textContent.trim() : el.value.trim();
+}
+
+function writeField(key, val) {
+    const d = FDEF[key], id = state.idMap[key], q = state.rootNode, f = curLevel().flags;
+    if (!id || !q || val == null || val === '') return;
+    if (d.kind === 'radio') {
+        if (f.customEls) { const g = q.querySelector('#' + id); if (g) g.querySelectorAll('.custom-radio').forEach(x => x.classList.toggle('selected', x.dataset.val === val)); }
+        else { const r = q.querySelector(`input[name="${id}"][value="${val}"]`); if (r) r.checked = true; }
+        return;
+    }
+    const el = q.querySelector('#' + id); if (!el) return;
+    if (COMPKINDS.includes(d.kind)) { if (el.__set) el.__set(val); return; }
+    if (d.kind === 'check') { if (f.customEls) el.classList.toggle('selected', val === 'Yes'); else el.checked = (val === 'Yes'); }
+    else if (d.kind === 'select') { if (f.customEls) { el.dataset.value = val; el.querySelector('.select-trigger').textContent = val; } else el.value = val; }
+    else { if (f.customEls) el.textContent = val; else el.value = val; }
+}
+
+function collectStep() {
+    state.renderedKeys.forEach(k => { const v = readField(k); if (v !== null) state.draft[k] = v; });
+    if (state.idMap.Website_HP && state.rootNode) {
+        const el = state.rootNode.querySelector('#' + state.idMap.Website_HP);
+        if (el && el.value.trim() !== '') state.hp = true;
+    }
+}
+
+function buildDOM() {
+    const L = curLevel(), flags = L.flags, queue = L.mode === 'queue';
+    hide('screen-loading'); show('screen-form');
+    if (queue) { show('toolbar'); if (flags.excel) show('btn-excel'); else hide('btn-excel'); } else hide('toolbar');
+    ensureTable();
+
+    const host = $('form-host'); host.innerHTML = ''; state.idMap = {}; state.iframeRef = null;
+    const css = $('form-styles').innerHTML;
+    let mount, qroot;
+
+    if (flags.iframe) {
+        const iframe = document.createElement('iframe');
+        iframe.style.width = '100%'; iframe.style.border = 'none'; iframe.style.minHeight = '520px';
+        host.appendChild(iframe);
+        const doc = iframe.contentWindow.document;
+        doc.open(); doc.write(`<html><head>${css}</head><body style="padding:10px 10px 160px;margin:0;background:#fff"></body></html>`); doc.close();
+        doc.addEventListener('mousemove', () => { state.mouseMoves++; });
+        state.iframeRef = iframe;
+        if (flags.shadow) { const w = doc.createElement('div'); doc.body.appendChild(w); mount = w.attachShadow({ mode: 'open' }); mount.innerHTML = css; qroot = mount; }
+        else { mount = doc.body; qroot = doc; }
+    } else if (flags.shadow) {
+        const w = document.createElement('div'); host.appendChild(w);
+        mount = w.attachShadow({ mode: 'open' }); mount.innerHTML = css; qroot = mount;
+    } else {
+        mount = host; qroot = document;
+        if (!$('injected-global')) { const st = document.createElement('style'); st.id = 'injected-global'; st.innerHTML = css.replace(/<style>|<\/style>/g, ''); document.head.appendChild(st); }
+    }
+    state.rootNode = qroot;
+
+    const steps = stepsOf(flags);
+    const layout = flags.wizard ? 'wizard' : flags.tabs ? 'tabs' : flags.accordion ? 'acc' : 'flat';
+    let keys = activeFields(flags);
+    if (layout === 'wizard') keys = keys.filter(k => FDEF[k].step === state.step);
+    state.renderedKeys = keys;
+
+    const hpEl = () => {
+        const hp = mk('div'), hpId = mapId('Website_HP', flags);
+        hp.innerHTML = `<label for="${hpId}">Website</label><input type="text" id="${hpId}" name="${hpId}" class="hp-field" value="" tabindex="-1" autocomplete="off">`;
+        return hp;
+    };
+
+    const grid = mk('div', 'fgrid');
+
+    if (layout === 'wizard') {
+        const idx = steps.indexOf(state.step);
+        const w = mk('div', 'fspan2', `<div class="wiz-label">ETAPA ${idx + 1} DE ${steps.length} · ${stepName(state.step, flags).toUpperCase()}</div><div class="wiz-bar"><div style="width:${((idx + 1) / steps.length) * 100}%"></div></div>`);
+        grid.appendChild(w);
+    }
+
+    if (!queue && flags.extra) {
+        const rec = state.dataset[state.row], bar = mk('div', 'invoice-box fspan2');
+        if (flags.canvasOcr) bar.innerHTML = `<div><span class="cap">OCR EXTRACTION REQUIRED</span><canvas id="ocr-canvas" width="220" height="60" class="ocr-canvas"></canvas></div>`;
+        else { const iid = flags.dynId ? genId() : 'invoice-display'; bar.innerHTML = `<div><span class="cap">Extract This ID:</span><span id="${iid}" class="invoice-text">${rec.InvoiceNumber}</span></div>`; }
+        grid.appendChild(bar);
+    }
+
+    if (layout === 'tabs' || layout === 'acc') {
+        const by = {}; keys.forEach(k => { (by[FDEF[k].step] = by[FDEF[k].step] || []).push(k); });
+        const wrap = mk('div', 'fspan2');
+        const head = mk('div', 'tab-head'); if (layout === 'tabs') { head.setAttribute('role', 'tablist'); wrap.appendChild(head); }
+        const panels = [], btns = [];
+        steps.forEach((s, i) => {
+            const panel = mk('div', 'sec-panel' + (i === 0 ? '' : ' hidden')); panel.dataset.step = s;
+            const pg = mk('div', 'fgrid');
+            let els = (by[s] || []).map(k => createFieldEl(k, flags));
+            if (flags.shuffle) els = shuffle(els);
+            if (i === 0 && flags.honeypot) els.push(hpEl());
+            els.forEach(e => pg.appendChild(e));
+            panel.appendChild(pg); panels.push(panel);
+            const btn = mk('button', layout === 'tabs' ? 'tab-btn' + (i === 0 ? ' active' : '') : 'acc-head' + (i === 0 ? ' open' : ''), stepName(s, flags));
+            btn.type = 'button'; btn.dataset.step = s; btns.push(btn);
+            if (layout === 'tabs') {
+                btn.setAttribute('role', 'tab'); panel.setAttribute('role', 'tabpanel');
+                btn.addEventListener('click', () => { btns.forEach(b => b.classList.toggle('active', b === btn)); panels.forEach(p => p.classList.toggle('hidden', p !== panel)); });
+                head.appendChild(btn);
+            } else {
+                btn.addEventListener('click', () => { const open = panel.classList.toggle('hidden') === false; btn.classList.toggle('open', open); });
+                wrap.appendChild(btn); wrap.appendChild(panel);
+            }
+        });
+        if (layout === 'tabs') panels.forEach(p => wrap.appendChild(p));
+        grid.appendChild(wrap);
+    } else {
+        let els = keys.map(k => createFieldEl(k, flags));
+        if (flags.honeypot) els.push(hpEl());
+        if (flags.shuffle) els = shuffle(els);
+        els.forEach(e => grid.appendChild(e));
+    }
+
+    mount.appendChild(grid);
+    if (flags.canvasOcr && !queue) { const c = mount.querySelector('#ocr-canvas'); if (c) drawInvoiceCanvas(c, state.dataset[state.row].InvoiceNumber); }
+
+    keys.forEach(k => writeField(k, state.draft[k]));
+
+    const last = !flags.wizard || state.step === steps[steps.length - 1];
+    if (flags.svgSubmit && last) {
+        const wrap = mk('div', 'fspan2');
+        wrap.style.cssText = 'display:flex;justify-content:flex-end;padding:0 4px';
+        wrap.innerHTML = `<svg width="220" height="56" class="svg-btn" role="button" aria-label="Submit"><rect width="220" height="56" fill="#0b0b0c" rx="8"/><rect width="216" height="52" x="2" y="2" fill="none" stroke="#2563eb" stroke-width="2" rx="6" stroke-dasharray="4"/><text x="110" y="34" fill="#ffffff" font-family="sans-serif" font-size="16" font-weight="900" text-anchor="middle" letter-spacing="1">SUBMIT (BOSS)</text></svg>`;
+        wrap.querySelector('svg').addEventListener('click', ev => window.submitCurrentRow(ev));
+        mount.appendChild(wrap);
+    }
+
+    if (flags.iframe && state.iframeRef) setTimeout(() => { try { state.iframeRef.style.height = state.iframeRef.contentWindow.document.body.scrollHeight + 20 + 'px'; } catch (e) { } }, 150);
+    renderControls();
+}
+
+function renderControls() {
+    const L = curLevel(), f = L.flags, queue = L.mode === 'queue';
+    const wrap = $('native-submit-wrapper'); wrap.innerHTML = '';
+    const steps = stepsOf(f), idx = steps.indexOf(state.step);
+    const last = !f.wizard || idx === steps.length - 1;
+    const mkb = (txt, cls, id, fn) => { const b = mk('button', cls, txt); b.id = id; b.type = 'button'; b.addEventListener('click', fn); wrap.appendChild(b); };
+    if (queue) mkb('Limpar', 'btn btn-light', 'btn-clear', () => { state.draft = {}; state.step = 1; state.hp = false; renderForm(); log('form_cleared'); });
+    if (f.wizard && idx > 0) mkb('← Voltar', 'btn btn-light', 'btn-back', () => prevStep());
+    if (!last) mkb('Próximo →', 'btn btn-blue', 'btn-next', () => nextStep());
+    else if (!f.svgSubmit) mkb(queue ? 'Enviar Registro' : 'Submit Record', 'btn', 'btn-submit', e => window.submitCurrentRow(e));
+}
+
+function drawInvoiceCanvas(canvas, text) {
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f4f6f8'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 15; i++) { ctx.beginPath(); ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height); ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height); ctx.strokeStyle = `rgba(0,0,0,${Math.random() * .2})`; ctx.stroke(); }
+    ctx.font = 'bold 26px Courier New'; ctx.fillStyle = '#25272b';
+    let x = 20; for (let i = 0; i < text.length; i++) { ctx.fillText(text[i], x, 35 + (Math.random() * 8 - 4)); x += 18; }
+}
+
+/* =====================================================================
+   VALIDAÇÃO, ETAPAS E ENVIO
+   ===================================================================== */
+function validateDraft(d, onlyStep) {
+    const f = curLevel().flags, errs = {};
+    activeFields(f).filter(k => !onlyStep || FDEF[k].step === onlyStep).forEach(k => {
+        if (d[k] === undefined || d[k] === null || d[k] === '') errs[k] = 'campo obrigatório';
+    });
+    if (!errs.Email && d.Email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.Email)) errs.Email = 'e-mail inválido';
+    if (!errs.CPF && d.CPF && !cpfValid(d.CPF)) errs.CPF = 'CPF inválido';
+    if (!errs.Amount && d.Amount && !/^\d{1,3}(\.\d{3})*,\d{2}$|^\d+,\d{2}$/.test(d.Amount)) errs.Amount = 'formato inválido (use 1.234,56)';
+    if (!errs.Date && d.Date) {
+        const m = d.Date.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        const dt = m && new Date(+m[3], +m[2] - 1, +m[1]);
+        if (!m || dt.getDate() !== +m[1] || dt.getMonth() !== +m[2] - 1) errs.Date = 'data inválida (dd/mm/aaaa)';
+    }
+    return errs;
+}
+
+function nextStep() {
+    if (state.phase !== 'work' || !ensureSession()) return;
+    collectStep();
+    const f = curLevel().flags;
+    if (f.validate) { const errs = validateDraft(state.draft, state.step); if (Object.keys(errs).length) { state.validationErrors++; showError(errs); log('validation_fail', { errs }); return; } }
+    const st = stepsOf(f), i = st.indexOf(state.step);
+    state.step = st[Math.min(st.length - 1, i + 1)]; log('step_next', { step: state.step }); renderForm();
+}
+function prevStep() {
+    collectStep();
+    const st = stepsOf(curLevel().flags), i = st.indexOf(state.step);
+    state.step = st[Math.max(0, i - 1)]; renderForm();
+}
+
+function antiBotCheck(e) {
+    const L = curLevel();
+    if ($('opt-webdriver').checked && navigator.webdriver) return 'navigator.webdriver detectado (automação via WebDriver).';
+    if (e && e.isTrusted === false) return 'Evento sintético (isTrusted = false): clique disparado via JavaScript.';
+    const dur = Date.now() - state.rowStartTime, min = L.minRowMs || 1000;
+    if (dur < min) return `Velocidade desumana: registro preenchido em ${dur}ms (mínimo ${min}ms).`;
+    if (state.mouseMoves < (L.minMouse || 3)) return `Trajetória de mouse insuficiente (${state.mouseMoves} eventos).`;
+    return null;
+}
+
+window.submitCurrentRow = function (e) {
+    if (state.isSubmitting || state.phase !== 'work') return;
+    if (!ensureSession()) return;
+    state.isSubmitting = true;
+    const release = () => setTimeout(() => { state.isSubmitting = false; }, 100);
+    const L = curLevel(), f = L.flags;
+
+    if (f.antiBot && !$('opt-noantibot').checked) {
+        const why = antiBotCheck(e);
+        if (why) { state.isSubmitting = false; blockUser(why); return; }
+    }
+
+    collectStep();
+
+    if (f.validate) {
+        const errs = validateDraft(state.draft);
+        if (Object.keys(errs).length) {
+            state.validationErrors++; log('validation_fail', { errs });
+            if (f.wizard) state.step = Math.min(...Object.keys(errs).map(k => FDEF[k].step));
+            renderForm(); showError(errs); release(); return;
+        }
+    }
+
+    if (L.mode === 'queue') queueSubmit(state.hp); else seqSubmit(state.hp);
+    release();
+};
+
+function seqSubmit(hp) {
+    const f = curLevel().flags, rec = state.dataset[state.row], fields = activeFields(f);
+    let correct = 0;
+    if (!hp) fields.forEach(k => { const v = state.draft[k]; if (v && norm(v) === norm(rec[k])) correct++; });
+    state.results.push({ correct, total: fields.length });
+    log('row_submit', { row: state.row, correct, total: fields.length, hp });
+    state.row++;
+    if (state.row < 5) newRecord(); else finishLevel();
+}
+
+function queueSubmit(hp) {
+    const f = curLevel().flags, fields = activeFields(f);
+    const email = norm(state.draft.Email);
+    const matches = state.dataset.filter(r => norm(r.Email) === email);
+    const rec = matches.find(r => r.valid && !r.processed);
+    if (rec && !hp) {
+        let c = 0; fields.forEach(k => { const v = state.draft[k]; if (v && norm(v) === norm(rec[k])) c++; });
+        rec.processed = true; rec.fieldsOk = c;
+        log('queue_ok', { invoice: rec.InvoiceNumber, correct: c, total: fields.length });
+    } else {
+        const why = hp ? 'honeypot preenchido' : matches.length ? (matches.some(m => m.valid) ? 'registro duplicado' : 'registro cancelado/inválido') : 'registro inexistente nos dados';
+        state.unwanted.push({ email: state.draft.Email, why }); log('queue_unwanted', { email: state.draft.Email, why });
+    }
+    state.sent++; setProgress();
+    showToast('Registro enviado com sucesso ✓', 2200);
+    newRecord();
+}
+
+window.finishQueue = function () {
+    if (state.phase !== 'work' || !ensureSession()) return;
+    if (curLevel().flags.upload) {
+        state.view = 'upload'; clearTimeout(state.intTimer); $('overlay-root').innerHTML = '';
+        hide('screen-form'); hide('upload-error'); show('screen-upload'); log('upload_screen');
+    } else finishLevel();
+};
+
+/* =====================================================================
+   EXCEL: GERAÇÃO DA PLANILHA E CONCILIAÇÃO DO RELATÓRIO
+   ===================================================================== */
+window.downloadExcel = function () {
+    if (state.phase !== 'work' || !ensureSession()) return;
+    const f = curLevel().flags;
+    state.downloads++; log('excel_download');
+    let headers;
+    if (f.split) headers = ['Fatura', 'CPF', 'Valor', 'Data', 'Status'];
+    else {
+        headers = ['Nome', 'Sobrenome', 'Email', 'Telefone', 'Empresa', 'Cargo', 'RPA', 'JavaScript', 'Departamento', 'Fatura'];
+        if (f.fin) headers.push('CPF', 'Valor', 'Data');
+        headers.push('Status');
+    }
+    const toRow = r => headers.map(h => r.raw[h]);
+    const sheetOf = recs => {
+        const ws = XLSX.utils.aoa_to_sheet([['RELATÓRIO DE CLIENTES - CONFIDENCIAL'], [], headers].concat(recs.map(toRow)));
+        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: headers.length - 1 } }];
+        return ws;
+    };
+    if (typeof XLSX === 'undefined') {
+        const csv = headers.join(';') + '\n' + state.dataset.map(r => toRow(r).join(';')).join('\n');
+        const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'clientes.csv'; document.body.appendChild(a); a.click(); a.remove();
+        showToast('Biblioteca XLSX indisponível (offline?): baixado em CSV.', 5000); return;
+    }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['LEIAME'], ['Este arquivo contém dados de clientes.'], [f.twoSheets ? 'Os dados válidos estão nas abas iniciadas por "Dados".' : 'Os dados válidos estão na aba "Dados".'], ['Ignore abas de resumo.'], ['Gerado em', new Date().toISOString()]]), 'LEIAME');
+    if (f.twoSheets) {
+        const half = Math.ceil(state.dataset.length / 2);
+        XLSX.utils.book_append_sheet(wb, sheetOf(state.dataset.slice(0, half)), 'Dados_A');
+        XLSX.utils.book_append_sheet(wb, sheetOf(state.dataset.slice(half)), 'Dados_B');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([['Resumo'], ['Total de linhas', state.dataset.length + 3], ['Ativos', Math.max(0, state.dataset.filter(r => r.valid).length - 2)]]), 'Resumo');
+    } else XLSX.utils.book_append_sheet(wb, sheetOf(state.dataset), 'Dados');
+    XLSX.writeFile(wb, f.twoSheets ? `clientes_${Date.now()}.xlsx` : 'clientes.xlsx');
+};
+
+window.onReportSelected = function (input) {
+    const file = input.files && input.files[0]; if (!file) return;
+    const err = m => { const e = $('upload-error'); e.innerText = m; show('upload-error'); };
+    if (typeof XLSX === 'undefined') { err('Biblioteca XLSX indisponível.'); return; }
+    if (curLevel().flags.session && !state.session.active) { ensureSession(); return; }
+    const rd = new FileReader();
+    rd.onload = ev => {
+        try {
+            const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+            const name = wb.SheetNames.find(n => /resultado/i.test(n)) || wb.SheetNames[0];
+            const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '' });
+            state.reportEval = compareReport(rows); log('report_evaluated', { ok: state.reportEval.ok, issues: state.reportEval.issues.length });
+            finishLevel();
+        } catch (e) { err('Não foi possível ler o arquivo: ' + e.message); }
+    };
+    rd.readAsArrayBuffer(file);
+};
+
+function compareReport(rows) {
+    const map = new Map();
+    rows.forEach(r => {
+        const o = {}; Object.keys(r).forEach(k => { o[stripAcc(k).toLowerCase()] = r[k]; });
+        if (o.fatura !== undefined) map.set(stripAcc(o.fatura), o);
+    });
+    const issues = []; let correct = 0;
+    state.dataset.forEach(rec => {
+        const got = map.get(stripAcc(rec.InvoiceNumber));
+        const expSt = rec.valid ? 'PROCESSADO' : 'IGNORADO';
+        if (!got) { issues.push(`${rec.InvoiceNumber}: linha ausente no relatório`); return; }
+        if (stripAcc(got.status) !== expSt) { issues.push(`${rec.InvoiceNumber}: status "${got.status}" (esperado ${expSt})`); return; }
+        if (!rec.valid && stripAcc(got.motivo) !== rec.reason) { issues.push(`${rec.InvoiceNumber}: motivo "${got.motivo}" (esperado ${rec.reason})`); return; }
+        correct++;
+    });
+    const known = new Set(state.dataset.map(r => stripAcc(r.InvoiceNumber)));
+    map.forEach((v, k) => { if (!known.has(k)) issues.push(`${k}: fatura inexistente na planilha`); });
+    return { ok: issues.length === 0, total: state.dataset.length, correct, issues };
+}
+
+/* =====================================================================
+   RESULTADO FINAL
+   ===================================================================== */
+function finishLevel() {
+    stopAll(); state.phase = 'done';
+    hideAllScreens(); ['ui-timer', 'ui-progress', 'ui-session'].forEach(hide);
+    const L = curLevel(); let acc = 0, pass = false, details = '';
+    const li = (ok, t) => `<div>${ok ? '✅' : '❌'} ${t}</div>`;
+
+    if (L.mode === 'queue') {
+        const valid = state.dataset.filter(r => r.valid), per = activeFields(L.flags).length;
+        const totalF = valid.length * per, okF = valid.reduce((s, r) => s + r.fieldsOk, 0);
+        const missing = valid.filter(r => !r.processed).length;
+        acc = totalF ? (okF / totalF) * 100 : 0;
+        pass = acc === 100 && missing === 0 && state.unwanted.length === 0 && (!L.flags.upload || (state.reportEval && state.reportEval.ok));
+        details += li(missing === 0, `Registros válidos cadastrados: ${valid.length - missing}/${valid.length}`);
+        details += li(state.unwanted.length === 0, `Submissões indevidas: ${state.unwanted.length}` + (state.unwanted.length ? ' (' + state.unwanted.map(u => `${u.email || '?'}: ${u.why}`).join('; ') + ')' : ''));
+        details += `<div>ℹ️ Erros de validação: ${state.validationErrors} · Sessões expiradas: ${state.expirations} · Logins falhos: ${state.loginFails} · Pop-ups tratados: ${state.interrupts} · Downloads: ${state.downloads}</div>`;
+        if (L.flags.upload) {
+            const r = state.reportEval;
+            details += li(r && r.ok, r ? `Relatório de conciliação: ${r.correct}/${r.total} linhas corretas` + (r.issues.length ? '<br><span style="font-size:12px">' + r.issues.slice(0, 8).join('<br>') + '</span>' : '') : 'Relatório não enviado');
+        }
+    } else {
+        let c = 0, t = 0; state.results.forEach(r => { c += r.correct; t += r.total; });
+        acc = t ? (c / t) * 100 : 0; pass = acc === 100;
+    }
+
+    $('res-accuracy').innerText = `${acc.toFixed(1)}%`;
+    $('res-time').innerText = $('timer-val').innerText;
+    $('res-details').innerHTML = details;
+    const icon = $('result-icon');
+    icon.className = 'icon-circle big ' + (pass ? 'ok' : 'bad');
+    icon.textContent = pass ? '✓' : '✕';
+    $('result-title').innerText = pass ? 'Flawless Victory!' : 'Bot Failure';
+    show('screen-results'); log('finish', { acc, pass });
+}
+
+window.onload = () => {
+    initApp();
+    $('tbl-filter').addEventListener('input', e => { if (state.tbl) { state.tbl.filter = e.target.value; state.tbl.page = 0; drawTable(); } });
+    $('tbl-prev').addEventListener('click', () => { if (state.tbl) { state.tbl.page = Math.max(0, state.tbl.page - 1); drawTable(); } });
+    $('tbl-next').addEventListener('click', () => { if (state.tbl) { state.tbl.page++; drawTable(); } });
+    $('data-table').addEventListener('click', e => {
+        const th = e.target.closest('th'); if (!th || !state.tbl) return;
+        const k = th.dataset.col; state.tbl.dir = state.tbl.sort === k ? -state.tbl.dir : 1; state.tbl.sort = k; drawTable();
+    });
+    selectLevel(1);
+};
+</script>
+</body>
+</html>
